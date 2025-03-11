@@ -1,0 +1,7 @@
+__pycache__/
+.azure/
+garmin_data.db
+test.py
+test2.py
+.env
+

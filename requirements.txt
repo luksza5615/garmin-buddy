@@ -1,0 +1,9 @@
+gunicorn
+uvicorn
+fastapi
+sqlalchemy
+pandas
+pyodbc
+fitparse
+streamlit
+garminconnect
