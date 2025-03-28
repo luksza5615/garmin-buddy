@@ -1,8 +1,7 @@
 __pycache__/
 .azure/
 garmin_data.db
-test.py
-test2.py
-test3.py
 .env
 
+/fit-files
+/zzz-ignored

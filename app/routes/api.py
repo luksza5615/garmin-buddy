@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from app.database import connect_to_azuredb
 
+
 app = FastAPI()
 connection_engine = connect_to_azuredb()
 
@@ -26,4 +27,4 @@ def home():
     return {"message": "It worksssss!"}
 
 
-home()
+# home()
