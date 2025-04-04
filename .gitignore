@@ -1,0 +1,24 @@
+# Python bytecode
+__pycache__/
+
+# Config
+.azure/
+.vscode/
+
+# Environment
+/.venv
+.env
+
+# DB
+garmin_data.db
+
+# temp
+garmin-buddy.zip
+fit-files/
+/zzz-ignored
+
+
+
+
+
+
