@@ -40,3 +40,7 @@ def execute_azure(clear_database=False):
             conn.commit()
 
         refresh_db(conn)
+
+
+if __name__ == "__main__":
+    execute_azure()

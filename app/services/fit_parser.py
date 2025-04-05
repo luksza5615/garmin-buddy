@@ -16,7 +16,7 @@ load_dotenv(override=True)
 fit_dir_name = "fit_files"
 fit_file_path_test = os.getenv("FIT_FILE_PATH_TEST")
 fit_dir_path = os.getenv("FIT_DIR_PATH")
-garmin_login = os.getenv("GARMIN_EMAIL")
+garmin_email = os.getenv("GARMIN_EMAIL")
 garmin_password = os.getenv("GARMIN_PASSWORD")
 
 
@@ -26,14 +26,14 @@ def fetch_latest_activity_date(db_connection):
     ).fetchone()[0]
 
 
-def download_activities(azure_connection, refresh=True):
-    garmin_connector = login_to_garmin(garmin_login, garmin_password)
+def download_activities(db_connection, refresh=True):
+    garmin_connector = login_to_garmin(garmin_email, garmin_password)
     os.makedirs(fit_dir_name, exist_ok=True)
 
     today = datetime.now().date()
 
     if refresh is True:
-        start_date = fetch_latest_activity_date(azure_connection)
+        start_date = fetch_latest_activity_date(db_connection)
     else:
         start_date = today - timedelta(days=2000)
 
@@ -157,16 +157,7 @@ def save_activity_to_db(data_to_save_in_db, db_connection):
                     :aerobic_training_effect, :anaerobic_training_effect,
                     :total_ascent, :total_descent)
                 """)
-        # db_connection.execute(
-        #     """INSERT INTO activity_data (sport, subsport, timestamp, distance_km, elapsed_time,
-        #             enhanced_avg_pace, avg_heart_rate, calories, aerobic_training_effect,
-        #             anaerobic_training_effect, total_ascent, total_descent)
-        #     VALUES (?, ?, ?, ?, ?, ?, ? ,? ,? ,?, ?, ?)
-        #     """, (data_to_save_in_db['sport'], data_to_save_in_db['subsport'], data_to_save_in_db['timestamp'],
-        #           data_to_save_in_db['distance'], data_to_save_in_db['elapsed_time'],
-        #           data_to_save_in_db['enhanced_avg_pace'], data_to_save_in_db['avg_heart_rate'], data_to_save_in_db['calories'],
-        #           data_to_save_in_db["aerobic_training_effect"], data_to_save_in_db["anaerobic_training_effect"],
-        #           data_to_save_in_db["total_ascent"], data_to_save_in_db["total_descent"]))
+
         with SessionLocal() as session:
             conn = session.connection()
             conn.execute(query, data_to_save_in_db)
@@ -174,17 +165,6 @@ def save_activity_to_db(data_to_save_in_db, db_connection):
         print("Data inserted sucessfully")
     except pyodbc.ProgrammingError as e:
         print(f"Failed to insert data: {e}")
-
-
-# input = {'sport': 'running', 'subsport': 'treadmill',
-#          'distance': '4.11',
-#          'elapsed_time': '00:29:01', 'enhanced_avg_pace': '6:22', 'avg_heart_rate': 144,
-#          'calories': 352, 'aerobic_training_effect': 3.1, 'anaerobic_training_effect': 0.0, 'total_ascent': None, 'total_descent': None}
-
-# with SessionLocal() as session:
-#     conn = session.connection()
-
-# save_activity_to_db(input, conn)
 
 
 def parse_and_save_single_file_to_db(fit_file_path, db_connection):

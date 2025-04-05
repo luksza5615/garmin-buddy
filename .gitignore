@@ -13,12 +13,7 @@ __pycache__/
 garmin_data.db
 
 # temp
-garmin-buddy.zip
 fit-files/
-/zzz-ignored
-
-
-
-
+zzz-ignored/
 
 
