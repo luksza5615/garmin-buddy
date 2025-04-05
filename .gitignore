@@ -9,17 +9,11 @@ __pycache__/
 /.venv
 .env
 
-# DBecho $VIRTUAL_ENV
-
+# DB
 garmin_data.db
 
 # temp
-garmin-buddy.zip
 fit-files/
-/zzz-ignoredddd
-
-
-
-
+zzz-ignored/
 
 
