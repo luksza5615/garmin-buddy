@@ -180,14 +180,6 @@ def parse_and_save_single_file_to_db(fit_file_path, db_connection):
             print(f"Invalid .fit file header: {fit_file_path}")
 
 
-def refresh_db(db_connection):
-    files = download_activities(db_connection, True)
-    print(files)
-
-    for path in files:
-        parse_and_save_single_file_to_db(path, db_connection)
-
-
 def parse_and_save_all_files_to_db(fit_directory_path, db_connection, files=[], refresh=True):
     if refresh is True:
         fit_files = files
