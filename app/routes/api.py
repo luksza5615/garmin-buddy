@@ -2,7 +2,7 @@ import pandas as pd
 import simplejson as json
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from app.database import connect_to_azuredb
+from app.database.db_connector import connect_to_azuredb
 
 
 app = FastAPI()
