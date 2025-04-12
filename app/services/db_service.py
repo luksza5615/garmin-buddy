@@ -5,16 +5,17 @@ from sqlalchemy import text
 
 
 def get_activities():
-    query = "SELECT * FROM activity_data ORDER BY timestamp DESC"
+    query = "SELECT * FROM activity_data ORDER BY activity_start_time DESC"
 
     with SessionLocal() as session:
         conn = session.connection()
         activities = pd.read_sql_query(query, conn)
+        print(activities)
         return activities
 
 
 def get_latest_activity_date():
-    query = "SELECT TOP 1 CONVERT(DATE, timestamp) AS LAST_DATE FROM dbo.activity_data ORDER BY timestamp DESC"
+    query = "SELECT TOP 1 CONVERT(DATE, activity_start_time) AS LAST_DATE FROM dbo.activity_data ORDER BY activity_start_time DESC"
 
     with SessionLocal() as session:
         conn = session.connection()
@@ -24,14 +25,12 @@ def get_latest_activity_date():
 
 
 def refresh_db():
-    with SessionLocal() as session:
-        db_connection = session.connection()
-        files = download_activities(db_connection, True)
-        print(files)
+    files = download_activities(refresh=True)
 
     for path in files:
-        parse_and_save_single_file_to_db(path, db_connection)
+        parse_and_save_single_file_to_db(path)
 
 
 if __name__ == "__main__":
+    # get_activities()
     refresh_db()

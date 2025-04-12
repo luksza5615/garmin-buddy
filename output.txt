@@ -1,0 +1,1605 @@
+Record 0 processed
+
+Message type: activity
+ * event: activity
+ * event_group: None
+ * event_type: stop
+ * local_timestamp: 2025-04-09 18:31:50
+ * num_sessions: 1
+ * timestamp: 2025-04-09 16:31:50
+ * total_timer_time: 3009.0 s
+ * type: manual
+ * unknown_7: None
+ * unknown_8: None
+
+Record 1 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Message type: device_settings
+ * active_time_zone: 0
+ * activity_tracker_enabled: True
+ * auto_activity_detect: 2147483647
+ * autosync_min_steps: 2000 steps
+ * autosync_min_time: 240 minutes
+ * backlight_mode: auto_brightness
+ * date_mode: month_day
+ * display_orientation: None
+ * lactate_threshold_autodetect_enabled: False
+ * mounting_side: left
+ * move_alert_enabled: False
+ * number_of_screens: None
+ * time_mode: hour24
+ * time_offset: 7200 s
+ * time_zone_offset: 0.0 hr
+ * utc_offset: 0
+ * unknown_10: 0
+ * unknown_101: 0
+ * unknown_104: (0, 24, 8, 7, 2, 3, 14, 13, 12, 16, 1, 23, 25, 11, 15, 33, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+ * unknown_107: 0
+ * unknown_108: 0
+ * unknown_109: 1
+ * unknown_11: 2
+ * unknown_110: 1
+ * unknown_111: 1
+ * unknown_112: 1
+ * unknown_115: None
+ * unknown_116: None
+ * unknown_117: None
+ * unknown_124: 20
+ * unknown_125: 8
+ * unknown_126: 1
+ * unknown_127: 1
+ * unknown_128: 2
+ * unknown_129: None
+ * unknown_13: 8
+ * unknown_130: None
+ * unknown_131: None
+ * unknown_132: None
+ * unknown_133: 1
+ * unknown_135: None
+ * unknown_137: None
+ * unknown_138: 0
+ * unknown_139: 0
+ * unknown_14: 20
+ * unknown_140: 0
+ * unknown_141: 2
+ * unknown_142: 0
+ * unknown_143: 100
+ * unknown_144: 1
+ * unknown_145: 0
+ * unknown_148: None
+ * unknown_149: 0
+ * unknown_15: 50
+ * unknown_151: 0
+ * unknown_159: 0
+ * unknown_160: 1
+ * unknown_161: 0
+ * unknown_163: 1
+ * unknown_164: 40
+ * unknown_165: 0
+ * unknown_170: (None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+ * unknown_171: 0
+ * unknown_175: 1
+ * unknown_176: 0
+ * unknown_177: 10
+ * unknown_178: 8
+ * unknown_179: 1
+ * unknown_180: 0
+ * unknown_181: 0
+ * unknown_195: 0
+ * unknown_196: 3
+ * unknown_200: 0
+ * unknown_201: 0
+ * unknown_203: 1
+ * unknown_204: 1
+ * unknown_205: 1
+ * unknown_206: 2
+ * unknown_207: 2
+ * unknown_208: 2
+ * unknown_209: 2
+ * unknown_210: 2
+ * unknown_211: 2
+ * unknown_217: 9
+ * unknown_218: 1
+ * unknown_219: 1
+ * unknown_22: 0
+ * unknown_221: 0
+ * unknown_23: None
+ * unknown_237: 0
+ * unknown_238: None
+ * unknown_239: 0
+ * unknown_243: 1
+ * unknown_244: 0
+ * unknown_25: None
+ * unknown_26: 254
+ * unknown_28: None
+ * unknown_3: 2
+ * unknown_30: None
+ * unknown_31: None
+ * unknown_34: None
+ * unknown_35: 1
+ * unknown_38: None
+ * unknown_41: 1
+ * unknown_42: 1
+ * unknown_43: 0
+ * unknown_44: None
+ * unknown_45: 1
+ * unknown_48: 0
+ * unknown_49: None
+ * unknown_52: 0
+ * unknown_53: 1
+ * unknown_54: None
+ * unknown_63: (1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1)
+ * unknown_64: 1
+ * unknown_65: 1
+ * unknown_67: 2
+ * unknown_68: 2
+ * unknown_75: 1
+ * unknown_76: None
+ * unknown_77: None
+ * unknown_8: None
+ * unknown_81: 1
+ * unknown_82: 1
+ * unknown_83: 1
+ * unknown_84: 0
+ * unknown_85: None
+ * unknown_87: 1
+ * unknown_9: None
+ * unknown_96: 0
+ * unknown_97: None
+ * unknown_98: None
+
+Record 1 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Message type: event
+ * event: timer
+ * event_group: 0
+ * event_type: start
+ * timer_trigger: manual
+ * timestamp: 2025-04-09 16:31:50
+ * unknown_15: None
+ * unknown_19: None
+ * unknown_20: None
+
+Message type: event
+ * data: 103
+ * event: 39
+ * event_group: None
+ * event_type: marker
+ * timestamp: 2025-04-09 16:41:09
+ * unknown_15: None
+ * unknown_19: None
+ * unknown_20: None
+
+Message type: event
+ * event: timer
+ * event_group: 0
+ * event_type: stop_all
+ * timer_trigger: manual
+ * timestamp: 2025-04-09 16:51:18
+ * unknown_15: None
+ * unknown_19: None
+ * unknown_20: None
+
+Message type: event
+ * event: timer
+ * event_group: 0
+ * event_type: start
+ * timer_trigger: manual
+ * timestamp: 2025-04-09 16:51:27
+ * unknown_15: None
+ * unknown_19: None
+ * unknown_20: None
+
+Message type: event
+ * event: timer
+ * event_group: 0
+ * event_type: stop_all
+ * timer_trigger: manual
+ * timestamp: 2025-04-09 17:18:04
+ * unknown_15: None
+ * unknown_19: None
+ * unknown_20: None
+
+Message type: event
+ * data: 120
+ * event: recovery_hr
+ * event_group: None
+ * event_type: marker
+ * timestamp: 2025-04-09 17:20:04
+ * unknown_15: None
+ * unknown_19: None
+ * unknown_20: None
+
+Message type: event
+ * event: timer
+ * event_group: 0
+ * event_type: start
+ * timer_trigger: manual
+ * timestamp: 2025-04-09 17:23:26
+ * unknown_15: None
+ * unknown_19: None
+ * unknown_20: None
+
+Message type: event
+ * event: timer
+ * event_group: 0
+ * event_type: stop_all
+ * timer_trigger: manual
+ * timestamp: 2025-04-09 17:27:27
+ * unknown_15: None
+ * unknown_19: None
+ * unknown_20: None
+
+Message type: event
+ * data: 142
+ * event: recovery_hr
+ * event_group: None
+ * event_type: marker
+ * timestamp: 2025-04-09 17:29:27
+ * unknown_15: None
+ * unknown_19: None
+ * unknown_20: None
+
+Message type: event
+ * event: timer
+ * event_group: 0
+ * event_type: start
+ * timer_trigger: manual
+ * timestamp: 2025-04-09 17:30:52
+ * unknown_15: None
+ * unknown_19: None
+ * unknown_20: None
+
+Message type: event
+ * event: timer
+ * event_group: 0
+ * event_type: stop_all
+ * timer_trigger: manual
+ * timestamp: 2025-04-09 17:30:53
+ * unknown_15: None
+ * unknown_19: None
+ * unknown_20: None
+
+Record 11 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Message type: file_creator
+ * hardware_version: None
+ * software_version: 2224
+ * unknown_2: None
+ * unknown_3: None
+ * unknown_4: None
+
+Record 1 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Message type: lap
+ * avg_cadence_position: (None, None) rpm
+ * avg_combined_pedal_smoothness: None percent
+ * avg_fractional_cadence: 0.1171875 rpm
+ * avg_heart_rate: 118 bpm
+ * avg_left_pco: None mm
+ * avg_left_pedal_smoothness: None percent
+ * avg_left_power_phase: (None, None, None, None) degrees
+ * avg_left_power_phase_peak: (None, None, None, None) degrees
+ * avg_left_torque_effectiveness: None percent
+ * avg_power: 322 watts
+ * avg_power_position: (None, None) watts
+ * avg_right_pco: None mm
+ * avg_right_pedal_smoothness: None percent
+ * avg_right_power_phase: (None, None, None, None) degrees
+ * avg_right_power_phase_peak: (None, None, None, None) degrees
+ * avg_right_torque_effectiveness: None percent
+ * avg_running_cadence: 80 strides/min
+ * avg_speed: None m/s
+ * avg_stance_time: 236.2 ms
+ * avg_stance_time_balance: 50.06 percent
+ * avg_stance_time_percent: 31.45 percent
+ * avg_step_length: 1215.5 mm
+ * avg_stroke_distance: None m
+ * avg_temperature: None C
+ * avg_vertical_oscillation: 100.1 mm
+ * avg_vertical_ratio: 7.82 percent
+ * end_position_lat: 597592566 semicircles
+ * end_position_long: 238354425 semicircles
+ * enhanced_avg_altitude: None m
+ * enhanced_avg_speed: 3.281 m/s
+ * enhanced_avg_speed: None m/s
+ * enhanced_max_altitude: 238.39999999999998 m
+ * enhanced_max_speed: 3.658 m/s
+ * enhanced_max_speed: None m/s
+ * enhanced_min_altitude: 224.20000000000005 m
+ * event: lap
+ * event_group: None
+ * event_type: stop
+ * first_length_index: None
+ * intensity: 5
+ * lap_trigger: distance
+ * left_right_balance: None
+ * max_cadence_position: (None, None) rpm
+ * max_fractional_cadence: 0.0 rpm
+ * max_heart_rate: 126 bpm
+ * max_power: 449 watts
+ * max_power_position: (None, None) watts
+ * max_running_cadence: 84 strides/min
+ * max_speed: None m/s
+ * max_temperature: None C
+ * message_index: 0
+ * normalized_power: 332 watts
+ * num_active_lengths: None lengths
+ * num_lengths: None lengths
+ * sport: running
+ * stand_count: None
+ * start_position_lat: 597645958 semicircles
+ * start_position_long: 238421452 semicircles
+ * start_time: 2025-04-09 16:31:50
+ * sub_sport: generic
+ * swim_stroke: None
+ * time_standing: None s
+ * timestamp: 2025-04-09 16:31:50
+ * total_ascent: 3 m
+ * total_calories: 60 kcal
+ * total_descent: 19 m
+ * total_distance: 1000.0 m
+ * total_elapsed_time: 304.793 s
+ * total_fat_calories: None kcal
+ * total_fractional_cycles: None cycles
+ * total_moving_time: None s
+ * total_strides: 407 strides
+ * total_timer_time: 304.793 s
+ * total_work: 98394 J
+ * wkt_step_index: None
+ * unknown_124: None
+ * unknown_125: None
+ * unknown_126: None
+ * unknown_136: 1963
+ * unknown_137: 1963
+ * unknown_143: None
+ * unknown_145: 84
+ * unknown_152: None
+ * unknown_155: 7
+ * unknown_161: 3337
+ * unknown_162: None
+ * unknown_27: 597645958
+ * unknown_28: 238421452
+ * unknown_29: 597592566
+ * unknown_30: 238354425
+ * unknown_70: None
+ * unknown_72: None
+ * unknown_73: None
+ * unknown_90: None
+ * unknown_96: None
+ * unknown_97: None
+
+Message type: lap
+ * avg_cadence_position: (None, None) rpm
+ * avg_combined_pedal_smoothness: None percent
+ * avg_fractional_cadence: 0.5 rpm
+ * avg_heart_rate: 135 bpm
+ * avg_left_pco: None mm
+ * avg_left_pedal_smoothness: None percent
+ * avg_left_power_phase: (None, None, None, None) degrees
+ * avg_left_power_phase_peak: (None, None, None, None) degrees
+ * avg_left_torque_effectiveness: None percent
+ * avg_power: 353 watts
+ * avg_power_position: (None, None) watts
+ * avg_right_pco: None mm
+ * avg_right_pedal_smoothness: None percent
+ * avg_right_power_phase: (None, None, None, None) degrees
+ * avg_right_power_phase_peak: (None, None, None, None) degrees
+ * avg_right_torque_effectiveness: None percent
+ * avg_running_cadence: 81 strides/min
+ * avg_speed: None m/s
+ * avg_stance_time: 225.7 ms
+ * avg_stance_time_balance: 49.42 percent
+ * avg_stance_time_percent: 30.65 percent
+ * avg_step_length: 1370.5 mm
+ * avg_stroke_distance: None m
+ * avg_temperature: None C
+ * avg_vertical_oscillation: 99.9 mm
+ * avg_vertical_ratio: 7.07 percent
+ * end_position_lat: 597535173 semicircles
+ * end_position_long: 238285435 semicircles
+ * enhanced_avg_altitude: None m
+ * enhanced_avg_speed: 3.608 m/s
+ * enhanced_avg_speed: None m/s
+ * enhanced_max_altitude: 224.39999999999998 m
+ * enhanced_max_speed: 4.376 m/s
+ * enhanced_max_speed: None m/s
+ * enhanced_min_altitude: 209.20000000000005 m
+ * event: lap
+ * event_group: None
+ * event_type: stop
+ * first_length_index: None
+ * intensity: 5
+ * lap_trigger: distance
+ * left_right_balance: None
+ * max_cadence_position: (None, None) rpm
+ * max_fractional_cadence: 0.0 rpm
+ * max_heart_rate: 149 bpm
+ * max_power: 492 watts
+ * max_power_position: (None, None) watts
+ * max_running_cadence: 84 strides/min
+ * max_speed: None m/s
+ * max_temperature: None C
+ * message_index: 1
+ * normalized_power: 355 watts
+ * num_active_lengths: None lengths
+ * num_lengths: None lengths
+ * sport: running
+ * stand_count: None
+ * start_position_lat: 597592535 semicircles
+ * start_position_long: 238353759 semicircles
+ * start_time: 2025-04-09 16:36:56
+ * sub_sport: generic
+ * swim_stroke: None
+ * time_standing: None s
+ * timestamp: 2025-04-09 16:31:50
+ * total_ascent: 0 m
+ * total_calories: 67 kcal
+ * total_descent: 14 m
+ * total_distance: 1000.0 m
+ * total_elapsed_time: 277.171 s
+ * total_fat_calories: None kcal
+ * total_fractional_cycles: None cycles
+ * total_moving_time: None s
+ * total_strides: 370 strides
+ * total_timer_time: 277.171 s
+ * total_work: 97890 J
+ * wkt_step_index: None
+ * unknown_124: None
+ * unknown_125: None
+ * unknown_126: None
+ * unknown_136: 3307
+ * unknown_137: 3652
+ * unknown_143: None
+ * unknown_145: 77
+ * unknown_152: None
+ * unknown_155: 7
+ * unknown_161: 3594
+ * unknown_162: None
+ * unknown_27: 597592535
+ * unknown_28: 238353759
+ * unknown_29: 597534945
+ * unknown_30: 238272302
+ * unknown_70: None
+ * unknown_72: None
+ * unknown_73: None
+ * unknown_90: None
+ * unknown_96: None
+ * unknown_97: None
+
+Message type: lap
+ * avg_cadence_position: (None, None) rpm
+ * avg_combined_pedal_smoothness: None percent
+ * avg_fractional_cadence: 0.6015625 rpm
+ * avg_heart_rate: 146 bpm
+ * avg_left_pco: None mm
+ * avg_left_pedal_smoothness: None percent
+ * avg_left_power_phase: (None, None, None, None) degrees
+ * avg_left_power_phase_peak: (None, None, None, None) degrees
+ * avg_left_torque_effectiveness: None percent
+ * avg_power: 338 watts
+ * avg_power_position: (None, None) watts
+ * avg_right_pco: None mm
+ * avg_right_pedal_smoothness: None percent
+ * avg_right_power_phase: (None, None, None, None) degrees
+ * avg_right_power_phase_peak: (None, None, None, None) degrees
+ * avg_right_torque_effectiveness: None percent
+ * avg_running_cadence: 81 strides/min
+ * avg_speed: None m/s
+ * avg_stance_time: 234.8 ms
+ * avg_stance_time_balance: 49.59 percent
+ * avg_stance_time_percent: 31.85 percent
+ * avg_step_length: 1225.7 mm
+ * avg_stroke_distance: None m
+ * avg_temperature: None C
+ * avg_vertical_oscillation: 96.9 mm
+ * avg_vertical_ratio: 7.68 percent
+ * end_position_lat: 597524029 semicircles
+ * end_position_long: 238419105 semicircles
+ * enhanced_avg_altitude: None m
+ * enhanced_avg_speed: 3.329 m/s
+ * enhanced_avg_speed: None m/s
+ * enhanced_max_altitude: 215.39999999999998 m
+ * enhanced_max_speed: 3.639 m/s
+ * enhanced_max_speed: None m/s
+ * enhanced_min_altitude: 207.39999999999998 m
+ * event: lap
+ * event_group: None
+ * event_type: stop
+ * first_length_index: None
+ * intensity: 5
+ * lap_trigger: distance
+ * left_right_balance: None
+ * max_cadence_position: (None, None) rpm
+ * max_fractional_cadence: 0.5 rpm
+ * max_heart_rate: 151 bpm
+ * max_power: 418 watts
+ * max_power_position: (None, None) watts
+ * max_running_cadence: 83 strides/min
+ * max_speed: None m/s
+ * max_temperature: None C
+ * message_index: 2
+ * normalized_power: 338 watts
+ * num_active_lengths: None lengths
+ * num_lengths: None lengths
+ * sport: running
+ * stand_count: None
+ * start_position_lat: 597535163 semicircles
+ * start_position_long: 238284755 semicircles
+ * start_time: 2025-04-09 16:41:33
+ * sub_sport: generic
+ * swim_stroke: None
+ * time_standing: None s
+ * timestamp: 2025-04-09 16:31:50
+ * total_ascent: 7 m
+ * total_calories: 74 kcal
+ * total_descent: 2 m
+ * total_distance: 1000.0 m
+ * total_elapsed_time: 300.409 s
+ * total_fat_calories: None kcal
+ * total_fractional_cycles: None cycles
+ * total_moving_time: None s
+ * total_strides: 405 strides
+ * total_timer_time: 300.409 s
+ * total_work: 101447 J
+ * wkt_step_index: None
+ * unknown_124: None
+ * unknown_125: None
+ * unknown_126: None
+ * unknown_136: 3441
+ * unknown_137: 3826
+ * unknown_143: None
+ * unknown_145: 84
+ * unknown_152: None
+ * unknown_155: 7
+ * unknown_161: 3364
+ * unknown_162: None
+ * unknown_27: 597535163
+ * unknown_28: 238419105
+ * unknown_29: 597518833
+ * unknown_30: 238278764
+ * unknown_70: None
+ * unknown_72: None
+ * unknown_73: None
+ * unknown_90: None
+ * unknown_96: None
+ * unknown_97: None
+
+Message type: lap
+ * avg_cadence_position: (None, None) rpm
+ * avg_combined_pedal_smoothness: None percent
+ * avg_fractional_cadence: 0.0390625 rpm
+ * avg_heart_rate: 156 bpm
+ * avg_left_pco: None mm
+ * avg_left_pedal_smoothness: None percent
+ * avg_left_power_phase: (None, None, None, None) degrees
+ * avg_left_power_phase_peak: (None, None, None, None) degrees
+ * avg_left_torque_effectiveness: None percent
+ * avg_power: 367 watts
+ * avg_power_position: (None, None) watts
+ * avg_right_pco: None mm
+ * avg_right_pedal_smoothness: None percent
+ * avg_right_power_phase: (None, None, None, None) degrees
+ * avg_right_power_phase_peak: (None, None, None, None) degrees
+ * avg_right_torque_effectiveness: None percent
+ * avg_running_cadence: 83 strides/min
+ * avg_speed: None m/s
+ * avg_stance_time: 229.7 ms
+ * avg_stance_time_balance: 49.37 percent
+ * avg_stance_time_percent: 31.75 percent
+ * avg_step_length: 1300.9 mm
+ * avg_stroke_distance: None m
+ * avg_temperature: None C
+ * avg_vertical_oscillation: 94.6 mm
+ * avg_vertical_ratio: 7.08 percent
+ * end_position_lat: 597531440 semicircles
+ * end_position_long: 238446905 semicircles
+ * enhanced_avg_altitude: None m
+ * enhanced_avg_speed: 3.55 m/s
+ * enhanced_avg_speed: None m/s
+ * enhanced_max_altitude: 216.39999999999998 m
+ * enhanced_max_speed: 4.301 m/s
+ * enhanced_max_speed: None m/s
+ * enhanced_min_altitude: 211.79999999999995 m
+ * event: lap
+ * event_group: None
+ * event_type: stop
+ * first_length_index: None
+ * intensity: 5
+ * lap_trigger: distance
+ * left_right_balance: None
+ * max_cadence_position: (None, None) rpm
+ * max_fractional_cadence: 0.0 rpm
+ * max_heart_rate: 167 bpm
+ * max_power: 447 watts
+ * max_power_position: (None, None) watts
+ * max_running_cadence: 89 strides/min
+ * max_speed: None m/s
+ * max_temperature: None C
+ * message_index: 3
+ * normalized_power: 368 watts
+ * num_active_lengths: None lengths
+ * num_lengths: None lengths
+ * sport: running
+ * stand_count: None
+ * start_position_lat: 597523990 semicircles
+ * start_position_long: 238419706 semicircles
+ * start_time: 2025-04-09 16:46:33
+ * sub_sport: generic
+ * swim_stroke: None
+ * time_standing: None s
+ * timestamp: 2025-04-09 16:31:50
+ * total_ascent: 4 m
+ * total_calories: 74 kcal
+ * total_descent: 2 m
+ * total_distance: 1000.0 m
+ * total_elapsed_time: 281.703 s
+ * total_fat_calories: None kcal
+ * total_fractional_cycles: None cycles
+ * total_moving_time: None s
+ * total_strides: 387 strides
+ * total_timer_time: 281.703 s
+ * total_work: 103490 J
+ * wkt_step_index: None
+ * unknown_124: None
+ * unknown_125: None
+ * unknown_126: None
+ * unknown_136: 3645
+ * unknown_137: 4223
+ * unknown_143: None
+ * unknown_145: 78
+ * unknown_152: None
+ * unknown_155: 7
+ * unknown_161: 3633
+ * unknown_162: None
+ * unknown_27: 597531632
+ * unknown_28: 238472281
+ * unknown_29: 597495714
+ * unknown_30: 238419706
+ * unknown_70: None
+ * unknown_72: None
+ * unknown_73: None
+ * unknown_90: None
+ * unknown_96: None
+ * unknown_97: None
+
+Message type: lap
+ * avg_cadence_position: (None, None) rpm
+ * avg_combined_pedal_smoothness: None percent
+ * avg_fractional_cadence: 0.7265625 rpm
+ * avg_heart_rate: 166 bpm
+ * avg_left_pco: None mm
+ * avg_left_pedal_smoothness: None percent
+ * avg_left_power_phase: (None, None, None, None) degrees
+ * avg_left_power_phase_peak: (None, None, None, None) degrees
+ * avg_left_torque_effectiveness: None percent
+ * avg_power: 358 watts
+ * avg_power_position: (None, None) watts
+ * avg_right_pco: None mm
+ * avg_right_pedal_smoothness: None percent
+ * avg_right_power_phase: (None, None, None, None) degrees
+ * avg_right_power_phase_peak: (None, None, None, None) degrees
+ * avg_right_torque_effectiveness: None percent
+ * avg_running_cadence: 82 strides/min
+ * avg_speed: None m/s
+ * avg_stance_time: 228.3 ms
+ * avg_stance_time_balance: 49.33 percent
+ * avg_stance_time_percent: 31.54 percent
+ * avg_step_length: 1299.2 mm
+ * avg_stroke_distance: None m
+ * avg_temperature: None C
+ * avg_vertical_oscillation: 95.2 mm
+ * avg_vertical_ratio: 7.27 percent
+ * end_position_lat: 597529811 semicircles
+ * end_position_long: 238517485 semicircles
+ * enhanced_avg_altitude: None m
+ * enhanced_avg_speed: 3.589 m/s
+ * enhanced_avg_speed: None m/s
+ * enhanced_max_altitude: 229.0 m
+ * enhanced_max_speed: 4.609 m/s
+ * enhanced_max_speed: None m/s
+ * enhanced_min_altitude: 206.60000000000002 m
+ * event: lap
+ * event_group: None
+ * event_type: stop
+ * first_length_index: None
+ * intensity: 5
+ * lap_trigger: distance
+ * left_right_balance: None
+ * max_cadence_position: (None, None) rpm
+ * max_fractional_cadence: 0.5 rpm
+ * max_heart_rate: 172 bpm
+ * max_power: 653 watts
+ * max_power_position: (None, None) watts
+ * max_running_cadence: 89 strides/min
+ * max_speed: None m/s
+ * max_temperature: None C
+ * message_index: 4
+ * normalized_power: 364 watts
+ * num_active_lengths: None lengths
+ * num_lengths: None lengths
+ * sport: running
+ * stand_count: None
+ * start_position_lat: 597531349 semicircles
+ * start_position_long: 238446373 semicircles
+ * start_time: 2025-04-09 16:51:15
+ * sub_sport: generic
+ * swim_stroke: None
+ * time_standing: None s
+ * timestamp: 2025-04-09 16:31:50
+ * total_ascent: 20 m
+ * total_calories: 77 kcal
+ * total_descent: 27 m
+ * total_distance: 1000.0 m
+ * total_elapsed_time: 287.328 s
+ * total_fat_calories: None kcal
+ * total_fractional_cycles: None cycles
+ * total_moving_time: None s
+ * total_strides: 378 strides
+ * total_timer_time: 278.619 s
+ * total_work: 99976 J
+ * wkt_step_index: None
+ * unknown_124: None
+ * unknown_125: None
+ * unknown_126: None
+ * unknown_136: 4028
+ * unknown_137: 4561
+ * unknown_143: None
+ * unknown_145: 76
+ * unknown_152: None
+ * unknown_155: 7
+ * unknown_161: 3677
+ * unknown_162: None
+ * unknown_27: 597545636
+ * unknown_28: 238532591
+ * unknown_29: 597526593
+ * unknown_30: 238434089
+ * unknown_70: None
+ * unknown_72: None
+ * unknown_73: None
+ * unknown_90: None
+ * unknown_96: None
+ * unknown_97: None
+
+Message type: lap
+ * avg_cadence_position: (None, None) rpm
+ * avg_combined_pedal_smoothness: None percent
+ * avg_fractional_cadence: 0.0078125 rpm
+ * avg_heart_rate: 164 bpm
+ * avg_left_pco: None mm
+ * avg_left_pedal_smoothness: None percent
+ * avg_left_power_phase: (None, None, None, None) degrees
+ * avg_left_power_phase_peak: (None, None, None, None) degrees
+ * avg_left_torque_effectiveness: None percent
+ * avg_power: 408 watts
+ * avg_power_position: (None, None) watts
+ * avg_right_pco: None mm
+ * avg_right_pedal_smoothness: None percent
+ * avg_right_power_phase: (None, None, None, None) degrees
+ * avg_right_power_phase_peak: (None, None, None, None) degrees
+ * avg_right_torque_effectiveness: None percent
+ * avg_running_cadence: 83 strides/min
+ * avg_speed: None m/s
+ * avg_stance_time: 241.0 ms
+ * avg_stance_time_balance: 49.63 percent
+ * avg_stance_time_percent: 33.16 percent
+ * avg_step_length: 1202.9 mm
+ * avg_stroke_distance: None m
+ * avg_temperature: None C
+ * avg_vertical_oscillation: 91.8 mm
+ * avg_vertical_ratio: 7.51 percent
+ * end_position_lat: 597584680 semicircles
+ * end_position_long: 238543092 semicircles
+ * enhanced_avg_altitude: None m
+ * enhanced_avg_speed: 3.353 m/s
+ * enhanced_avg_speed: None m/s
+ * enhanced_max_altitude: 241.39999999999998 m
+ * enhanced_max_speed: 3.994 m/s
+ * enhanced_max_speed: None m/s
+ * enhanced_min_altitude: 209.39999999999998 m
+ * event: lap
+ * event_group: None
+ * event_type: stop
+ * first_length_index: None
+ * intensity: 5
+ * lap_trigger: distance
+ * left_right_balance: None
+ * max_cadence_position: (None, None) rpm
+ * max_fractional_cadence: 0.5 rpm
+ * max_heart_rate: 174 bpm
+ * max_power: 551 watts
+ * max_power_position: (None, None) watts
+ * max_running_cadence: 87 strides/min
+ * max_speed: None m/s
+ * max_temperature: None C
+ * message_index: 5
+ * normalized_power: 419 watts
+ * num_active_lengths: None lengths
+ * num_lengths: None lengths
+ * sport: running
+ * stand_count: None
+ * start_position_lat: 597529920 semicircles
+ * start_position_long: 238517289 semicircles
+ * start_time: 2025-04-09 16:56:02
+ * sub_sport: generic
+ * swim_stroke: None
+ * time_standing: None s
+ * timestamp: 2025-04-09 16:31:50
+ * total_ascent: 34 m
+ * total_calories: 82 kcal
+ * total_descent: 1 m
+ * total_distance: 1000.0 m
+ * total_elapsed_time: 298.206 s
+ * total_fat_calories: None kcal
+ * total_fractional_cycles: None cycles
+ * total_moving_time: None s
+ * total_strides: 408 strides
+ * total_timer_time: 298.206 s
+ * total_work: 121520 J
+ * wkt_step_index: None
+ * unknown_124: None
+ * unknown_125: None
+ * unknown_126: None
+ * unknown_136: 3952
+ * unknown_137: 4270
+ * unknown_143: None
+ * unknown_145: 84
+ * unknown_152: None
+ * unknown_155: 7
+ * unknown_161: 3633
+ * unknown_162: None
+ * unknown_27: 597584680
+ * unknown_28: 238553977
+ * unknown_29: 597526466
+ * unknown_30: 238517113
+ * unknown_70: None
+ * unknown_72: None
+ * unknown_73: None
+ * unknown_90: None
+ * unknown_96: None
+ * unknown_97: None
+
+Message type: lap
+ * avg_cadence_position: (None, None) rpm
+ * avg_combined_pedal_smoothness: None percent
+ * avg_fractional_cadence: 0.3125 rpm
+ * avg_heart_rate: 164 bpm
+ * avg_left_pco: None mm
+ * avg_left_pedal_smoothness: None percent
+ * avg_left_power_phase: (None, None, None, None) degrees
+ * avg_left_power_phase_peak: (None, None, None, None) degrees
+ * avg_left_torque_effectiveness: None percent
+ * avg_power: 365 watts
+ * avg_power_position: (None, None) watts
+ * avg_right_pco: None mm
+ * avg_right_pedal_smoothness: None percent
+ * avg_right_power_phase: (None, None, None, None) degrees
+ * avg_right_power_phase_peak: (None, None, None, None) degrees
+ * avg_right_torque_effectiveness: None percent
+ * avg_running_cadence: 81 strides/min
+ * avg_speed: None m/s
+ * avg_stance_time: 245.8 ms
+ * avg_stance_time_balance: 49.56 percent
+ * avg_stance_time_percent: 33.1 percent
+ * avg_step_length: 1174.2 mm
+ * avg_stroke_distance: None m
+ * avg_temperature: None C
+ * avg_vertical_oscillation: 92.8 mm
+ * avg_vertical_ratio: 7.86 percent
+ * end_position_lat: 597615800 semicircles
+ * end_position_long: 238548907 semicircles
+ * enhanced_avg_altitude: None m
+ * enhanced_avg_speed: 3.132 m/s
+ * enhanced_avg_speed: None m/s
+ * enhanced_max_altitude: 257.0 m
+ * enhanced_max_speed: 4.367 m/s
+ * enhanced_max_speed: None m/s
+ * enhanced_min_altitude: 234.60000000000002 m
+ * event: lap
+ * event_group: None
+ * event_type: stop
+ * first_length_index: None
+ * intensity: 5
+ * lap_trigger: distance
+ * left_right_balance: None
+ * max_cadence_position: (None, None) rpm
+ * max_fractional_cadence: 0.0 rpm
+ * max_heart_rate: 174 bpm
+ * max_power: 537 watts
+ * max_power_position: (None, None) watts
+ * max_running_cadence: 86 strides/min
+ * max_speed: None m/s
+ * max_temperature: None C
+ * message_index: 6
+ * normalized_power: 388 watts
+ * num_active_lengths: None lengths
+ * num_lengths: None lengths
+ * sport: running
+ * stand_count: None
+ * start_position_lat: 597584916 semicircles
+ * start_position_long: 238543550 semicircles
+ * start_time: 2025-04-09 17:01:00
+ * sub_sport: generic
+ * swim_stroke: None
+ * time_standing: None s
+ * timestamp: 2025-04-09 16:31:50
+ * total_ascent: 29 m
+ * total_calories: 86 kcal
+ * total_descent: 14 m
+ * total_distance: 1000.0 m
+ * total_elapsed_time: 319.262 s
+ * total_fat_calories: None kcal
+ * total_fractional_cycles: None cycles
+ * total_moving_time: None s
+ * total_strides: 426 strides
+ * total_timer_time: 319.262 s
+ * total_work: 116697 J
+ * wkt_step_index: None
+ * unknown_124: None
+ * unknown_125: None
+ * unknown_126: None
+ * unknown_136: 3838
+ * unknown_137: 4383
+ * unknown_143: None
+ * unknown_145: 83
+ * unknown_152: None
+ * unknown_155: 8
+ * unknown_161: 3426
+ * unknown_162: None
+ * unknown_27: 597638264
+ * unknown_28: 238575631
+ * unknown_29: 597582957
+ * unknown_30: 238543550
+ * unknown_70: None
+ * unknown_72: None
+ * unknown_73: None
+ * unknown_90: None
+ * unknown_96: None
+ * unknown_97: None
+
+Message type: lap
+ * avg_cadence_position: (None, None) rpm
+ * avg_combined_pedal_smoothness: None percent
+ * avg_fractional_cadence: 0.578125 rpm
+ * avg_heart_rate: 167 bpm
+ * avg_left_pco: None mm
+ * avg_left_pedal_smoothness: None percent
+ * avg_left_power_phase: (None, None, None, None) degrees
+ * avg_left_power_phase_peak: (None, None, None, None) degrees
+ * avg_left_torque_effectiveness: None percent
+ * avg_power: 366 watts
+ * avg_power_position: (None, None) watts
+ * avg_right_pco: None mm
+ * avg_right_pedal_smoothness: None percent
+ * avg_right_power_phase: (None, None, None, None) degrees
+ * avg_right_power_phase_peak: (None, None, None, None) degrees
+ * avg_right_torque_effectiveness: None percent
+ * avg_running_cadence: 83 strides/min
+ * avg_speed: None m/s
+ * avg_stance_time: 223.9 ms
+ * avg_stance_time_balance: 49.19 percent
+ * avg_stance_time_percent: 31.15 percent
+ * avg_step_length: 1339.8 mm
+ * avg_stroke_distance: None m
+ * avg_temperature: None C
+ * avg_vertical_oscillation: 95.2 mm
+ * avg_vertical_ratio: 6.97 percent
+ * end_position_lat: 597604666 semicircles
+ * end_position_long: 238594778 semicircles
+ * enhanced_avg_altitude: None m
+ * enhanced_avg_speed: 3.707 m/s
+ * enhanced_avg_speed: None m/s
+ * enhanced_max_altitude: 256.0 m
+ * enhanced_max_speed: 4.675 m/s
+ * enhanced_max_speed: None m/s
+ * enhanced_min_altitude: 223.79999999999995 m
+ * event: lap
+ * event_group: None
+ * event_type: stop
+ * first_length_index: None
+ * intensity: 5
+ * lap_trigger: distance
+ * left_right_balance: None
+ * max_cadence_position: (None, None) rpm
+ * max_fractional_cadence: 0.5 rpm
+ * max_heart_rate: 173 bpm
+ * max_power: 586 watts
+ * max_power_position: (None, None) watts
+ * max_running_cadence: 87 strides/min
+ * max_speed: None m/s
+ * max_temperature: None C
+ * message_index: 7
+ * normalized_power: 390 watts
+ * num_active_lengths: None lengths
+ * num_lengths: None lengths
+ * sport: running
+ * stand_count: None
+ * start_position_lat: 597615561 semicircles
+ * start_position_long: 238549398 semicircles
+ * start_time: 2025-04-09 17:06:20
+ * sub_sport: generic
+ * swim_stroke: None
+ * time_standing: None s
+ * timestamp: 2025-04-09 16:31:50
+ * total_ascent: 23 m
+ * total_calories: 76 kcal
+ * total_descent: 36 m
+ * total_distance: 1000.0 m
+ * total_elapsed_time: 269.75 s
+ * total_fat_calories: None kcal
+ * total_fractional_cycles: None cycles
+ * total_moving_time: None s
+ * total_strides: 371 strides
+ * total_timer_time: 269.75 s
+ * total_work: 98471 J
+ * wkt_step_index: None
+ * unknown_124: None
+ * unknown_125: None
+ * unknown_126: None
+ * unknown_136: 4102
+ * unknown_137: 4513
+ * unknown_143: None
+ * unknown_145: 80
+ * unknown_152: None
+ * unknown_155: 6
+ * unknown_161: 3854
+ * unknown_162: None
+ * unknown_27: 597615561
+ * unknown_28: 238611453
+ * unknown_29: 597573084
+ * unknown_30: 238549398
+ * unknown_70: None
+ * unknown_72: None
+ * unknown_73: None
+ * unknown_90: None
+ * unknown_96: None
+ * unknown_97: None
+
+Message type: lap
+ * avg_cadence_position: (None, None) rpm
+ * avg_combined_pedal_smoothness: None percent
+ * avg_fractional_cadence: 0.7109375 rpm
+ * avg_heart_rate: 157 bpm
+ * avg_left_pco: None mm
+ * avg_left_pedal_smoothness: None percent
+ * avg_left_power_phase: (None, None, None, None) degrees
+ * avg_left_power_phase_peak: (None, None, None, None) degrees
+ * avg_left_torque_effectiveness: None percent
+ * avg_power: 317 watts
+ * avg_power_position: (None, None) watts
+ * avg_right_pco: None mm
+ * avg_right_pedal_smoothness: None percent
+ * avg_right_power_phase: (None, None, None, None) degrees
+ * avg_right_power_phase_peak: (None, None, None, None) degrees
+ * avg_right_torque_effectiveness: None percent
+ * avg_running_cadence: 77 strides/min
+ * avg_speed: None m/s
+ * avg_stance_time: 260.2 ms
+ * avg_stance_time_balance: 49.66 percent
+ * avg_stance_time_percent: 34.01 percent
+ * avg_step_length: 1082.7 mm
+ * avg_stroke_distance: None m
+ * avg_temperature: None C
+ * avg_vertical_oscillation: 94.4 mm
+ * avg_vertical_ratio: 8.64 percent
+ * end_position_lat: 597625928 semicircles
+ * end_position_long: 238506222 semicircles
+ * enhanced_avg_altitude: None m
+ * enhanced_avg_speed: 2.774 m/s
+ * enhanced_avg_speed: None m/s
+ * enhanced_max_altitude: 257.0 m
+ * enhanced_max_speed: 3.863 m/s
+ * enhanced_max_speed: None m/s
+ * enhanced_min_altitude: 238.0 m
+ * event: lap
+ * event_group: None
+ * event_type: stop
+ * first_length_index: None
+ * intensity: 5
+ * lap_trigger: distance
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\SzataLukasz\Documents\Projects\garmin\garmin-buddy\app\services\garmin_service.py", line 326, in <module>
+    parse_fit_file(fit_file_path_test)
+  File "C:\Users\SzataLukasz\Documents\Projects\garmin\garmin-buddy\app\services\garmin_service.py", line 239, in parse_fit_file
+    "distance_in_km": convert_m_to_km(data.get("total_distance")),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SzataLukasz\Documents\Projects\garmin\garmin-buddy\app\utils\converter.py", line 35, in convert_m_to_km
+    value_in_km = value_in_m / 1000
+                  ~~~~~~~~~~~^~~~~~
+TypeError: unsupported operand type(s) for /: 'NoneType' and 'int'
+ * left_right_balance: None
+ * max_cadence_position: (None, None) rpm
+ * max_fractional_cadence: 0.0 rpm
+ * max_heart_rate: 173 bpm
+ * max_power: 534 watts
+ * max_power_position: (None, None) watts
+ * max_running_cadence: 91 strides/min
+ * max_speed: None m/s
+ * max_temperature: None C
+ * message_index: 8
+ * normalized_power: 342 watts
+ * num_active_lengths: None lengths
+ * num_lengths: None lengths
+ * sport: running
+ * stand_count: None
+ * start_position_lat: 597604984 semicircles
+ * start_position_long: 238594500 semicircles
+ * start_time: 2025-04-09 17:10:49
+ * sub_sport: generic
+ * swim_stroke: None
+ * time_standing: None s
+ * timestamp: 2025-04-09 16:31:50
+ * total_ascent: 27 m
+ * total_calories: 88 kcal
+ * total_descent: 22 m
+ * total_distance: 1000.0 m
+ * total_elapsed_time: 360.455 s
+ * total_fat_calories: None kcal
+ * total_fractional_cycles: None cycles
+ * total_moving_time: None s
+ * total_strides: 461 strides
+ * total_timer_time: 360.455 s
+ * total_work: 114519 J
+ * wkt_step_index: None
+ * unknown_124: None
+ * unknown_125: None
+ * unknown_126: None
+ * unknown_136: 3625
+ * unknown_137: 4040
+ * unknown_143: None
+ * unknown_145: 94
+ * unknown_152: None
+ * unknown_155: 9
+ * unknown_161: 3037
+ * unknown_162: None
+ * unknown_27: 597638811
+ * unknown_28: 238594500
+ * unknown_29: 597599878
+ * unknown_30: 238506222
+ * unknown_70: None
+ * unknown_72: None
+ * unknown_73: None
+ * unknown_90: None
+ * unknown_96: None
+ * unknown_97: None
+
+Message type: lap
+ * avg_cadence_position: (None, None) rpm
+ * avg_combined_pedal_smoothness: None percent
+ * avg_fractional_cadence: 0.6875 rpm
+ * avg_heart_rate: 145 bpm
+ * avg_left_pco: None mm
+ * avg_left_pedal_smoothness: None percent
+ * avg_left_power_phase: (None, None, None, None) degrees
+ * avg_left_power_phase_peak: (None, None, None, None) degrees
+ * avg_left_torque_effectiveness: None percent
+ * avg_power: 335 watts
+ * avg_power_position: (None, None) watts
+ * avg_right_pco: None mm
+ * avg_right_pedal_smoothness: None percent
+ * avg_right_power_phase: (None, None, None, None) degrees
+ * avg_right_power_phase_peak: (None, None, None, None) degrees
+ * avg_right_torque_effectiveness: None percent
+ * avg_running_cadence: 80 strides/min
+ * avg_speed: None m/s
+ * avg_stance_time: 250.4 ms
+ * avg_stance_time_balance: 50.21 percent
+ * avg_stance_time_percent: 33.35 percent
+ * avg_step_length: 1131.4 mm
+ * avg_stroke_distance: None m
+ * avg_temperature: None C
+ * avg_vertical_oscillation: 93.4 mm
+ * avg_vertical_ratio: 8.24 percent
+ * end_position_lat: 597660543 semicircles
+ * end_position_long: 238428072 semicircles
+ * enhanced_avg_altitude: None m
+ * enhanced_avg_speed: 3.027 m/s
+ * enhanced_avg_speed: None m/s
+ * enhanced_max_altitude: 247.60000000000002 m
+ * enhanced_max_speed: 3.434 m/s
+ * enhanced_max_speed: None m/s
+ * enhanced_min_altitude: 229.79999999999995 m
+ * event: lap
+ * event_group: None
+ * event_type: stop
+ * first_length_index: None
+ * intensity: 5
+ * lap_trigger: session_end
+ * left_right_balance: None
+ * max_cadence_position: (None, None) rpm
+ * max_fractional_cadence: 0.5 rpm
+ * max_heart_rate: 155 bpm
+ * max_power: 465 watts
+ * max_power_position: (None, None) watts
+ * max_running_cadence: 84 strides/min
+ * max_speed: None m/s
+ * max_temperature: None C
+ * message_index: 9
+ * normalized_power: 339 watts
+ * num_active_lengths: None lengths
+ * num_lengths: None lengths
+ * sport: running
+ * stand_count: None
+ * start_position_lat: 597625746 semicircles
+ * start_position_long: 238505668 semicircles
+ * start_time: 2025-04-09 17:16:50
+ * sub_sport: generic
+ * swim_stroke: None
+ * time_standing: None s
+ * timestamp: 2025-04-09 16:31:50
+ * total_ascent: 13 m
+ * total_calories: 73 kcal
+ * total_descent: 5 m
+ * total_distance: 964.64 m
+ * total_elapsed_time: 844.181 s
+ * total_fat_calories: None kcal
+ * total_fractional_cycles: None cycles
+ * total_moving_time: None s
+ * total_strides: 419 strides
+ * total_timer_time: 318.632 s
+ * total_work: 106865 J
+ * wkt_step_index: None
+ * unknown_124: None
+ * unknown_125: None
+ * unknown_126: None
+ * unknown_136: 3545
+ * unknown_137: 4351
+ * unknown_143: None
+ * unknown_145: 94
+ * unknown_152: None
+ * unknown_155: 8
+ * unknown_161: 3152
+ * unknown_162: None
+ * unknown_27: 597661388
+ * unknown_28: 238505668
+ * unknown_29: 597608184
+ * unknown_30: 238428067
+ * unknown_70: None
+ * unknown_72: None
+ * unknown_73: None
+ * unknown_90: None
+ * unknown_96: None
+ * unknown_97: None
+
+Record 10 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Message type: session
+ * avg_cadence_position: (None, None) rpm
+ * avg_combined_pedal_smoothness: None percent
+ * avg_fractional_cadence: 0.40625 rpm
+ * avg_heart_rate: 152 bpm
+ * avg_left_pco: None mm
+ * avg_left_pedal_smoothness: None percent
+ * avg_left_power_phase: (None, None, None, None) degrees
+ * avg_left_power_phase_peak: (None, None, None, None) degrees
+ * avg_left_torque_effectiveness: None percent
+ * avg_power: 352 watts
+ * avg_power_position: (None, None) watts
+ * avg_right_pco: None mm
+ * avg_right_pedal_smoothness: None percent
+ * avg_right_power_phase: (None, None, None, None) degrees
+ * avg_right_power_phase_peak: (None, None, None, None) degrees
+ * avg_right_torque_effectiveness: None percent
+ * avg_running_cadence: 81 strides/min
+ * avg_speed: None m/s
+ * avg_stance_time: 238.5 ms
+ * avg_stance_time_balance: 49.62 percent
+ * avg_stance_time_percent: 32.27 percent
+ * avg_step_length: 1227.3 mm
+ * avg_stroke_count: None strokes/lap
+ * avg_stroke_distance: None m
+ * avg_temperature: None C
+ * avg_vertical_oscillation: 95.4 mm
+ * avg_vertical_ratio: 7.65 percent
+ * enhanced_avg_speed: 3.312 m/s
+ * enhanced_avg_speed: None m/s
+ * enhanced_max_speed: 4.675 m/s
+ * enhanced_max_speed: None m/s
+ * event: session
+ * event_group: None
+ * event_type: stop
+ * first_lap_index: 0
+ * intensity_factor: None if
+ * left_right_balance: None
+ * max_cadence_position: (None, None) rpm
+ * max_fractional_cadence: 0.0 rpm
+ * max_heart_rate: 174 bpm
+ * max_power: 653 watts
+ * max_power_position: (None, None) watts
+ * max_running_cadence: 91 strides/min
+ * max_speed: None m/s
+ * max_temperature: None C
+ * message_index: 0
+ * nec_lat: 597661388 semicircles
+ * nec_long: 238611453 semicircles
+ * normalized_power: 366 watts
+ * num_active_lengths: None lengths
+ * num_laps: 10
+ * pool_length: None m
+ * pool_length_unit: None
+ * sport: running
+ * stand_count: None
+ * start_position_lat: 597645958 semicircles
+ * start_position_long: 238421452 semicircles
+ * start_time: 2025-04-09 16:31:50
+ * sub_sport: generic
+ * swc_lat: 597495714 semicircles
+ * swc_long: 238272302 semicircles
+ * swim_stroke: None swim_stroke
+ * threshold_power: None watts
+ * time_standing: None s
+ * timestamp: 2025-04-09 16:31:50
+ * total_anaerobic_training_effect: 0.3
+ * total_ascent: 161 m
+ * total_calories: 756 kcal
+ * total_descent: 143 m
+ * total_distance: 9964.64 m
+ * total_elapsed_time: 3543.258 s
+ * total_fractional_cycles: None cycles
+ * total_moving_time: None s
+ * total_strides: 4036 strides
+ * total_timer_time: 3009.0 s
+ * total_training_effect: 4.0
+ * total_work: 1059269 J
+ * training_stress_score: None tss
+ * trigger: activity_end
+ * unknown_106: None
+ * unknown_107: None
+ * unknown_108: None
+ * unknown_109: None
+ * unknown_110: Run
+ * unknown_138: (13, 0)
+ * unknown_147: None
+ * unknown_148: None
+ * unknown_149: None
+ * unknown_150: None
+ * unknown_151: 0
+ * unknown_152: 0
+ * unknown_157: None
+ * unknown_158: None
+ * unknown_168: 11846575
+ * unknown_169: 3737
+ * unknown_170: 4561
+ * unknown_177: None
+ * unknown_178: 834
+ * unknown_179: None
+ * unknown_180: 1963
+ * unknown_184: 0
+ * unknown_185: None
+ * unknown_188: 4
+ * unknown_189: None
+ * unknown_190: None
+ * unknown_192: None
+ * unknown_193: None
+ * unknown_194: None
+ * unknown_195: None
+ * unknown_196: 72
+ * unknown_197: None
+ * unknown_198: None
+ * unknown_201: None
+ * unknown_202: None
+ * unknown_205: None
+ * unknown_206: None
+ * unknown_207: None
+ * unknown_211: 3455
+ * unknown_212: 1
+ * unknown_218: None
+ * unknown_33: None
+ * unknown_38: 597660543
+ * unknown_39: 238428072
+ * unknown_78: None
+ * unknown_79: None
+ * unknown_80: None
+ * unknown_81: 0
+
+Record 1 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Message type: sport
+ * name: Run
+ * sport: running
+ * sub_sport: generic
+ * unknown_10: (None, 0, 0, None)
+ * unknown_11: 1
+ * unknown_12: None
+ * unknown_13: 0
+ * unknown_15: 1
+ * unknown_19: (None, None, None)
+ * unknown_21: None
+ * unknown_5: 1
+ * unknown_6: 0
+ * unknown_9: 0
+
+Record 1 processed
+
+Record 0 processed
+
+Message type: timestamp_correlation
+ * local_timestamp: 2025-04-09 18:31:50
+ * system_timestamp: 2025-04-09 16:31:50
+ * timestamp: 2025-04-09 16:31:50
+
+Record 1 processed
+
+Record 0 processed
+
+Message type: user_profile
+ * activity_class: 80
+ * depth_setting: None
+ * dist_setting: metric
+ * elev_setting: metric
+ * friendly_name: None
+ * gender: male
+ * height: 1.78 m
+ * height_setting: metric
+ * hr_setting: max
+ * language: english
+ * position_setting: degree_minute_second
+ * resting_heart_rate: 46 bpm
+ * sleep_time: 23:30:00
+ * speed_setting: metric
+ * temperature_setting: metric
+ * user_running_step_length: None m
+ * user_walking_step_length: None m
+ * wake_time: 06:45:00
+ * weight: 74.0 kg
+ * weight_setting: metric
+ * unknown_24: 91
+ * unknown_33: None
+ * unknown_36: None
+ * unknown_37: 0
+ * unknown_38: None
+ * unknown_41: None
+ * unknown_42: None
+ * unknown_43: 0
+ * unknown_44: 30
+ * unknown_45: 7
+ * unknown_52: 0
+ * unknown_53: 3
+ * unknown_54: 4
+ * unknown_57: 0
+ * unknown_60: (0, 0, 0, 0, 0, 0, 2)
+ * unknown_62: 1
+ * unknown_65: 1
+ * unknown_66: 0
+ * unknown_67: None
+
+Record 1 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Record 0 processed
+
+Message type: zones_target
+ * functional_threshold_power: 407
+ * hr_calc_type: custom
+ * max_heart_rate: 184
+ * pwr_calc_type: percent_ftp
+ * threshold_heart_rate: 153
+ * unknown_10: 1
+ * unknown_11: 0
+ * unknown_12: None
+ * unknown_13: 5
+ * unknown_15: None
+ * unknown_16: None
+ * unknown_254: 1
+ * unknown_8: None
+ * unknown_9: 0
+
+Record 1 processed
+
