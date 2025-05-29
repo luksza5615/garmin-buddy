@@ -1,5 +1,5 @@
 import pytest
-from app.database import get_engine
+from app.database.db_connector import get_engine
 from sqlalchemy.exc import OperationalError
 from sqlalchemy import text
 
