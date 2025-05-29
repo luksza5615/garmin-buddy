@@ -16,8 +16,10 @@ def create_activity_table():
                 calories_burnt INT,
                 aerobic_training_effect_0_to_5 DECIMAL(2,1),
                 anaerobic_training_effect_0_to_5 DECIMAL(2,1),
-                total_ascent_in_meters NT,
-                total_descent_in_meters INT
+                total_ascent_in_meters INT,
+                total_descent_in_meters INT,
+                start_of_week DATE,
+                running_efficiency_index DECIMAL(5,2)
             )
             """
 
@@ -28,15 +30,5 @@ def create_activity_table():
         connection.commit()
 
 
-def drop_table(table_name):
-    query = f"DROP TABLE {table_name}"
-
-    with SessionLocal() as session:
-        connection = session.connection()
-        connection.execute(text(query))
-        connection.commit()
-
-
 if __name__ == '__main__':
     create_activity_table()
-    # drop_table("test")
