@@ -36,22 +36,6 @@ def get_db_connection():
         if session:
             session.close()
 
-# @contextmanager
-# @retry(
-#     stop=stop_after_attempt(5),
-#     wait=wait_fixed(2),
-#     retry=retry_if_exception_type(OperationalError),
-#     before=lambda retry_state: print(f"Retrying connection... Attempt #{retry_state.attempt_number}"),
-#     after=lambda retry_state: print(f"Attempt #{retry_state.attempt_number} finished"))
-# def get_db_connection():
-#     with SessionLocal() as session:
-#         try:
-#             conn = session.connection()
-#             yield conn
-#         except OperationalError as e:
-#             print(f"Connection failed: {e}")
-#             raise
-
 
 def get_engine():
     return create_engine(db_connection_string, pool_pre_ping=True, connect_args={"timeout": 60})
