@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from app.services.db_service import get_activities, get_top_activities, refresh_db
 from zzzignored.ai_service import summarize_training
 
+print("changed file")
 
 st.set_page_config(page_title='Garmin Buddy', layout='wide')
 
