@@ -1,9 +1,18 @@
 import streamlit as st
 import matplotlib.pyplot as plt
-from app.services.db_service import get_activities, get_top_activities, refresh_db
-from zzzignored.ai_service import summarize_training
+from app.services.db_service import get_activities, get_top_activities, refresh_db, get_last_activity
+from app.services.llm_google_service import generate_response, build_prompt
 
 st.set_page_config(page_title='Garmin Buddy', layout='wide')
+
+if st.button("Call chat"):
+    with st.spinner("Generating response"):
+        workout = get_last_activity()
+        prompt = build_prompt(workout)
+        response = generate_response(prompt)
+        st.write(response)
+        st.text_area("Training summary", response)
+
 
 if st.button("Refresh database"):
     with st.spinner("Fetching last activities..."):
@@ -101,6 +110,5 @@ if st.button("Summarize last trainings"):
     with st.spinner("Fetching an analyzing data..."):
         df = get_top_activities()
         # st.dataframe(df)
-        summary = summarize_training(df)
         # summary = test_ai()
         st.write(summary)

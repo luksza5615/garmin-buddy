@@ -4,6 +4,15 @@ from app.services.garmin_service import download_activities, parse_and_save_file
 from sqlalchemy import text
 
 
+def get_last_activity():
+    query = "SELECT TOP 1 * FROM activity_data ORDER BY activity_start_time DESC"
+
+    with get_db_connection() as conn:
+        activity = pd.read_sql_query(query, conn)
+        print(activity)
+
+    return activity
+
 def get_activities():
     query = "SELECT * FROM activity_data ORDER BY activity_start_time DESC"
 

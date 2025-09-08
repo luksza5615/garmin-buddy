@@ -17,6 +17,8 @@ fit_dir_name = "fit_files"
 fit_dir_path = os.getenv("FIT_DIR_PATH")
 garmin_email = os.getenv("GARMIN_EMAIL")
 garmin_password = os.getenv("GARMIN_PASSWORD")
+fit_dir_path
+
 
 
 def calculate_start_of_week(timestamp):
@@ -40,6 +42,12 @@ def set_download_start_date():
 
     files = [f for f in os.listdir(fit_dir_path) if os.path.isfile(
         os.path.join(fit_dir_path, f))]
+
+    if not files:
+        start_date = latest_activity_date_in_db
+        print(f"No local FIT files found in '{fit_dir_path}'. Using last DB date: {start_date}")
+        return start_date
+
     latest_file_name = sorted(files, reverse=True)[0]
     latest_file_date = datetime.strptime(
         latest_file_name[:10], "%Y-%m-%d").date()
@@ -80,13 +88,16 @@ def download_activities(refresh=True):
             activity_id, dl_fmt=Garmin.ActivityDownloadFormat.ORIGINAL)
 
         fit_path_zip = os.path.join(
-            fit_dir_name, f"{activity_date}_{activity_type}_{activity_id}.zip")
+            fit_dir_path, f"{activity_date}_{activity_type}_{activity_id}.zip")
+
+        print(f"FIT_DIR_PATH: {fit_dir_path}")
+        print(f"Saving ZIP to: {fit_path_zip}")
 
         try:
             with open(fit_path_zip, "wb") as f:
                 f.write(fit_data)
         except Exception as e:
-            print(f"Failed to save: {e}")
+            print(f"Failed to save ZIP file '{fit_path_zip}': {e}")
 
         try:
             with zipfile.ZipFile(fit_path_zip, 'r') as zip_ref:
@@ -103,10 +114,13 @@ def download_activities(refresh=True):
                     files.append(new_filepath)
 
             # Remove the zip file after extraction
-            os.remove(fit_path_zip)
+            try:
+                os.remove(fit_path_zip)
+            except FileNotFoundError:
+                pass
 
         except Exception as e:
-            print(f"Failed to extract or remove zip file: {e}")
+            print(f"Failed to extract or remove ZIP '{fit_path_zip}': {e}")
 
     print(f"Files downloaded: {files}")
     print("Activities download finished")
@@ -335,4 +349,5 @@ def review_fit_file_fields(file_path):
 
 if __name__ == '__main__':
     fit_file_path_test = os.getenv("FIT_FILE_PATH_TEST")
-    review_fit_file_fields(fit_file_path_test)
+    parse_and_save_file_to_db(fit_file_path_test)
+    # review_fit_file_fields(fit_file_path_test)
