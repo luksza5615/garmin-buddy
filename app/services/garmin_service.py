@@ -20,7 +20,6 @@ garmin_password = os.getenv("GARMIN_PASSWORD")
 fit_dir_path
 
 
-
 def calculate_start_of_week(timestamp):
     week_start = timestamp - pd.to_timedelta(timestamp.weekday(), unit='D')
     return week_start
@@ -128,6 +127,136 @@ def download_activities(refresh=True):
     return files
 
 
+def _list_existing_fit_files():
+    files = []
+    try:
+        for f in os.listdir(fit_dir_path):
+            full = os.path.join(fit_dir_path, f)
+            if os.path.isfile(full) and f.lower().endswith('.fit'):
+                files.append(full)
+    except FileNotFoundError:
+        pass
+    return files
+
+
+def _build_fit_filename(activity_date, activity_type, activity_id):
+    return f"{activity_date}_{activity_type}_{activity_id}.fit"
+
+
+def _build_zip_filename(activity_date, activity_type, activity_id):
+    return f"{activity_date}_{activity_type}_{activity_id}.zip"
+
+
+def _get_db_activity_timestamps_set():
+    from app.services.db_service import get_activity_timestamps
+    rows = get_activity_timestamps()
+    return set([row.activity_start_time for row in rows])
+
+
+def _get_garmin_activities_full_history(garmin_connector, start_date=None, end_date=None, window_days=90):
+    """
+    Fetch activities across full history by paging through date windows.
+    If start_date is None, default to a far past date.
+    """
+    if end_date is None:
+        end_date = datetime.now().date()
+    if start_date is None:
+        start_date = datetime(1990, 1, 1).date()
+
+    all_activities = []
+    window_start = start_date
+    while window_start <= end_date:
+        window_end = min(window_start + timedelta(days=window_days), end_date)
+        try:
+            activities = garmin_connector.get_activities_by_date(
+                window_start.isoformat(), window_end.isoformat())
+            if activities:
+                all_activities.extend(activities)
+        except Exception as e:
+            print(f"Failed to fetch activities for window {window_start} - {window_end}: {e}")
+        window_start = window_end + timedelta(days=1)
+
+    return all_activities
+
+
+def sync_all_activities():
+    """
+    Full sync:
+    1) Get set of activity timestamps from DB
+    2) Get full activity list from Garmin (paged by date windows)
+    3) For each Garmin activity:
+       - If timestamp in DB: skip
+       - Else, if corresponding .fit file exists: parse & save to DB
+       - Else, download, extract .fit, parse & save
+    Avoids duplicate downloads and ensures DB completeness.
+    """
+    garmin_connector = login_to_garmin(garmin_email, garmin_password)
+
+    db_timestamps = _get_db_activity_timestamps_set()
+
+    garmin_activities = _get_garmin_activities_full_history(garmin_connector)
+
+    existing_files = set(os.path.basename(p) for p in _list_existing_fit_files())
+
+    processed = []
+
+    for activity in garmin_activities:
+        try:
+            activity_id = activity['activityId']
+            activity_type = activity['activityType']['typeKey']
+            start_time = datetime.strptime(activity['startTimeLocal'], "%Y-%m-%d %H:%M:%S")
+            activity_date = start_time.date()
+
+            if start_time in db_timestamps:
+                continue
+
+            fit_filename = _build_fit_filename(activity_date, activity_type, activity_id)
+            fit_filepath = os.path.join(fit_dir_path, fit_filename)
+
+            if fit_filename in existing_files:
+                # File already downloaded; parse and save to DB
+                parse_and_save_file_to_db(fit_filepath)
+                processed.append(fit_filepath)
+                continue
+
+            # Download from Garmin as ZIP, then extract to .fit
+            fit_data = garmin_connector.download_activity(
+                activity_id, dl_fmt=Garmin.ActivityDownloadFormat.ORIGINAL)
+
+            zip_filename = _build_zip_filename(activity_date, activity_type, activity_id)
+            fit_path_zip = os.path.join(fit_dir_path, zip_filename)
+
+            try:
+                with open(fit_path_zip, "wb") as f:
+                    f.write(fit_data)
+            except Exception as e:
+                print(f"Failed to save ZIP file '{fit_path_zip}': {e}")
+                continue
+
+            try:
+                with zipfile.ZipFile(fit_path_zip, 'r') as zip_ref:
+                    for member in zip_ref.namelist():
+                        new_filepath = fit_filepath
+                        with zip_ref.open(member) as source, open(new_filepath, 'wb') as target:
+                            target.write(source.read())
+                try:
+                    os.remove(fit_path_zip)
+                except FileNotFoundError:
+                    pass
+            except Exception as e:
+                print(f"Failed to extract or remove ZIP '{fit_path_zip}': {e}")
+                continue
+
+            # Parse and save to DB
+            parse_and_save_file_to_db(fit_filepath)
+            processed.append(fit_filepath)
+        except Exception as e:
+            print(f"Failed processing activity: {e}")
+
+    print(f"Synced activities (files processed): {len(processed)}")
+    return processed
+
+
 def print_message_data(message_type, file_path):
     print(f"Message type: {message_type}")
     fitfile = fitparse.FitFile(file_path)
@@ -158,13 +287,13 @@ def parse_fit_file(file_path):
     message_types = ['activity', 'session']  # most important: session
 
     parsed_activity_data = {}
-    for message_type in message_types:
-        for record in fitfile.get_messages(message_type):
-            for field in record:
-                if field.name and field.value is not None:
-                    parsed_activity_data[field.name] = field.value
+    # for message_type in message_types:
+    #     for record in fitfile.get_messages(message_type):
+    #         for field in record:
+    #             if field.name and field.value is not None:
+    #                 parsed_activity_data[field.name] = field.value
 
-            print_message_data(message_type, file_path)
+    #         print_message_data(message_type, file_path)
 
     # print("PARSED ACTIVITY DATA: \n %s \n" % parsed_activity_data)
 
@@ -348,6 +477,7 @@ def review_fit_file_fields(file_path):
 
 
 if __name__ == '__main__':
-    fit_file_path_test = os.getenv("FIT_FILE_PATH_TEST")
-    parse_and_save_file_to_db(fit_file_path_test)
+    sync_all_activities()
+    # fit_file_path_test = os.getenv("FIT_FILE_PATH_TEST")
+    # parse_and_save_file_to_db(fit_file_path_test)
     # review_fit_file_fields(fit_file_path_test)

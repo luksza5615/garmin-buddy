@@ -36,5 +36,3 @@ def convert_m_to_km(value_in_m):
 
     return f"{value_in_km:.2f}"
 
-
-print(convert_speed_to_pace(2.78))
