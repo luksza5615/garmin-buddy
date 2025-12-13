@@ -24,6 +24,8 @@ def calculate_start_of_week(timestamp):
     week_start = timestamp - pd.to_timedelta(timestamp.weekday(), unit='D')
     return week_start
 
+def datetime_to_id(dt):
+    return int(dt.strftime("%Y%m%d%H%M%S"))
 
 def check_if_activity_already_exists_in_db(checked_activity_timestamp):
     from app.services.db_service import get_activity_timestamps
@@ -152,6 +154,11 @@ def _get_db_activity_timestamps_set():
     rows = get_activity_timestamps()
     return set([row.activity_start_time for row in rows])
 
+def _get_db_activity_ids_set():
+    from app.services.db_service import get_activity_ids
+    rows = get_activity_ids()
+    return set([row.activity_id for row in rows])
+
 
 def _get_garmin_activities_full_history(garmin_connector, start_date=None, end_date=None, window_days=90):
     """
@@ -190,12 +197,14 @@ def sync_all_activities():
        - Else, download, extract .fit, parse & save
     Avoids duplicate downloads and ensures DB completeness.
     """
+    
     garmin_connector = login_to_garmin(garmin_email, garmin_password)
 
-    db_timestamps = _get_db_activity_timestamps_set()
-
+    # db_timestamps = _get_db_activity_timestamps_set()
+    db_ids = _get_db_activity_ids_set()
+    # start_date = datetime(2023, 11, 24).date()
+    # end_date = datetime(2023, 11, 24).date()
     garmin_activities = _get_garmin_activities_full_history(garmin_connector)
-
     existing_files = set(os.path.basename(p) for p in _list_existing_fit_files())
 
     processed = []
@@ -204,10 +213,15 @@ def sync_all_activities():
         try:
             activity_id = activity['activityId']
             activity_type = activity['activityType']['typeKey']
-            start_time = datetime.strptime(activity['startTimeLocal'], "%Y-%m-%d %H:%M:%S")
+            start_time = datetime.strptime(activity['startTimeGMT'], "%Y-%m-%d %H:%M:%S")
+            # print(f"Start time z biblioteki: {start_time}")
             activity_date = start_time.date()
+            # activity_start_temp = activity['startTimeLocal']
+            # print(f"TYP: {type(activity_start_temp)}")
+            activity_db_id = datetime_to_id(start_time)
 
-            if start_time in db_timestamps:
+            if activity_db_id in db_ids:
+                print("Activity already exists in DB")
                 continue
 
             fit_filename = _build_fit_filename(activity_date, activity_type, activity_id)
@@ -215,6 +229,7 @@ def sync_all_activities():
 
             if fit_filename in existing_files:
                 # File already downloaded; parse and save to DB
+                print("File already downloaded, but not saved in DB.")
                 parse_and_save_file_to_db(fit_filepath)
                 processed.append(fit_filepath)
                 continue
@@ -256,7 +271,6 @@ def sync_all_activities():
     print(f"Synced activities (files processed): {len(processed)}")
     return processed
 
-
 def print_message_data(message_type, file_path):
     print(f"Message type: {message_type}")
     fitfile = fitparse.FitFile(file_path)
@@ -287,15 +301,15 @@ def parse_fit_file(file_path):
     message_types = ['activity', 'session']  # most important: session
 
     parsed_activity_data = {}
-    # for message_type in message_types:
-    #     for record in fitfile.get_messages(message_type):
-    #         for field in record:
-    #             if field.name and field.value is not None:
-    #                 parsed_activity_data[field.name] = field.value
+    for message_type in message_types:
+        for record in fitfile.get_messages(message_type):
+            for field in record:
+                if field.name and field.value is not None:
+                    parsed_activity_data[field.name] = field.value
 
-    #         print_message_data(message_type, file_path)
+            # print_message_data(message_type, file_path)
 
-    # print("PARSED ACTIVITY DATA: \n %s \n" % parsed_activity_data)
+    print("FULLY PARSED ACTIVITY DATA: \n %s \n" % parsed_activity_data)
 
     return parsed_activity_data
 
@@ -310,6 +324,9 @@ def modify_subsport(sport, subsport):
 
 
 def calculate_efficiency_index(pace, avg_hr):
+    # Expect "m:ss"; if missing/invalid, return None
+    if not pace or ":" not in pace or avg_hr in (None, 0):
+        return None
     minutes, seconds = pace.split(":")
     minutes = int(minutes)
     seconds = int(seconds)
@@ -319,6 +336,8 @@ def calculate_efficiency_index(pace, avg_hr):
 
 
 def prepare_activity_data_to_save_in_db(parsed_activity_data):
+    activity_id = datetime_to_id(parsed_activity_data.get("start_time"))
+
     subsport = modify_subsport(parsed_activity_data.get(
         'sport'), parsed_activity_data.get("sub_sport"))
 
@@ -332,6 +351,7 @@ def prepare_activity_data_to_save_in_db(parsed_activity_data):
         running_efficiency_index = None
 
     activity_data_to_save_in_db = {
+        "activity_id": activity_id,
         "activity_date": parsed_activity_data.get("local_timestamp"),
         "activity_start_time": parsed_activity_data.get("local_timestamp"),
         "sport": parsed_activity_data.get("sport"),
@@ -349,7 +369,7 @@ def prepare_activity_data_to_save_in_db(parsed_activity_data):
         "running_efficiency_index": running_efficiency_index
     }
 
-    print(activity_data_to_save_in_db)
+    print(f"ACTIVITY DATA TO BE SAVED IN DB:\n {activity_data_to_save_in_db}")
 
     return activity_data_to_save_in_db
 
@@ -357,12 +377,12 @@ def prepare_activity_data_to_save_in_db(parsed_activity_data):
 def save_activity_to_db(activity_data_to_save_in_db):
     if check_if_activity_already_exists_in_db(activity_data_to_save_in_db["activity_start_time"]) is False:
         try:
-            query = text("""INSERT INTO activity_data (
-                        activity_date, activity_start_time, sport, subsport, distance_in_km, elapsed_duration, 
+            query = text("""INSERT INTO activity (
+                        activity_id, activity_date, activity_start_time, sport, subsport, distance_in_km, elapsed_duration, 
                         grade_adjusted_avg_pace_min_per_km, avg_heart_rate, calories_burnt, aerobic_training_effect_0_to_5, 
                         anaerobic_training_effect_0_to_5, total_ascent_in_meters, total_descent_in_meters, start_of_week, running_efficiency_index)
                     VALUES (
-                        :activity_date, :activity_start_time, :sport, :subsport, :distance_in_km, :elapsed_duration,
+                        :activity_id, :activity_date, :activity_start_time, :sport, :subsport, :distance_in_km, :elapsed_duration,
                         :grade_adjusted_avg_pace_min_per_km, :avg_heart_rate, :calories_burnt,
                         :aerobic_training_effect_0_to_5, :anaerobic_training_effect_0_to_5,
                         :total_ascent_in_meters, :total_descent_in_meters, :start_of_week, :running_efficiency_index)
@@ -411,8 +431,8 @@ def review_fit_file_fields(file_path):
                      'connectivity',
                      'course',
                      'course_point',
-                     #  'device_info',
-                     #  'device_settings',
+                      'device_info',
+                      'device_settings',
                      'dive_alarm',
                      'dive_gas',
                      'dive_settings',
@@ -424,7 +444,7 @@ def review_fit_file_fields(file_path):
                      'exercise_title',
                      'field_capabilities',
                      'file_capabilities',
-                     #  'file_creator',
+                      'file_creator',
                      'goal',
                      #  'gps_metadata',
                      'gyroscope_data',
@@ -453,7 +473,7 @@ def review_fit_file_fields(file_path):
                      'slave_device',
                      'software',
                      'speed_zone',
-                     #  'sport',
+                     'sport',
                      'three_d_sensor_calibration',
                      'timestamp_correlation',
                      'totals',
@@ -477,7 +497,13 @@ def review_fit_file_fields(file_path):
 
 
 if __name__ == '__main__':
+    # review_fit_file_fields('C:\\Users\\LSzata\\OneDrive - DXC Production\\Projects\\garmin\\fit-files\\2022-11-03_running_9911607177.fit')
+    # sync_all_activities()
     sync_all_activities()
+    # parse_fit_file('C:\\Users\\LSzata\\OneDrive - DXC Production\\Projects\\garmin\\fit-files\\2025-10-07_running_20618240154.fit')
     # fit_file_path_test = os.getenv("FIT_FILE_PATH_TEST")
     # parse_and_save_file_to_db(fit_file_path_test)
     # review_fit_file_fields(fit_file_path_test)
+    # dt = datetime(2022, 11, 3, 18, 32, 51)
+    # id_value = datetime_to_id(dt)
+    # print(id_value)  

@@ -25,65 +25,12 @@ def generate_response_based_on_file():
 
     return response.text
 
-# def generate_response_based_on_file():
-#     my_file = client.files.upload(file="C:/Users/LSzata/OneDrive - DXC Production/Projects/garmin/garmin-buddy/tests/app_test/services/resources/activities.csv")
-#     file_name=my_file.name
-#     print(f"Nazwa: {file_name}")
-#     print(f"Uri: {my_file.uri}")
-#     myfile = client.files.get(name=file_name)
-#     print(myfile)
-
-    # response = client.models.generate_content(
-    #     model="gemini-1.5-flash",
-    #     contents = [
-    #         {
-    #             "role": "user",
-    #             "parts": [
-    #                 {
-    #                     "file_data": {
-    #                         "file_uri": my_file.uri
-    #                         # "mime_type": "text/csv"
-    #                     }
-    #                 },
-    #                 {
-    #                     "text": "What can you see in the attached file"
-    #                 }
-                    
-    #             ]
-    #         }
-    #     ]
-    # )
-
-    # response = client.models.generate_content(
-    #     model="gemini-2.5-flash",
-    #     contents = [
-    #         "What is the content of the file",
-    #         Part.from_uri(
-    #             file_uri=my_file.uri,
-    #             mime_type="text/csv"
-    #         )
-    #     ]
-    # )
-
-    # response = client.models.generate_content(
-    #     model="gemini-1.5-flash",
-    #     contents=["What can you see in the attached file", my_file],
-    # )
-
-    # response = client.models.generate_content(
-    #     model="gemini-1.5-flash",
-    #     contents=[my_file.uri, "What can you see in the attached file"],
-    # )
-
-    return response.text  
-
 def get_workout_data():
     activity = get_last_activity()
     activity_details = activity.iloc[0].to_dict()
     print(activity_details)
 
     return activity_details
-
 
 
 workout_example = {
@@ -116,8 +63,8 @@ def build_prompt(workout_details):
             Ascent: {workout_details['total_ascent_in_meters']} m
             Descent: {workout_details['total_descent_in_meters']} m
 
-            2. Compare workout to my other past workouts
-            {context}
+            # 2. Compare workout to my other past workouts
+            # {context}
             """)
 
 def summarize_workout(activity_details):

@@ -3,10 +3,11 @@ from sqlalchemy import text
 
 
 def create_activity_table():
-    query = """IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='activity_data' AND xtype='U')
-            CREATE TABLE activity_data (
+    query = """IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='activity' AND xtype='U')
+            CREATE TABLE activity (
+                activity_id BIGINT NOT NULL PRIMARY KEY,
                 activity_date DATE,
-                activity_start_time DATETIME PRIMARY KEY,
+                activity_start_time DATETIME,
                 sport VARCHAR(30),
                 subsport VARCHAR(30),
                 distance_in_km DECIMAL(5,2),
