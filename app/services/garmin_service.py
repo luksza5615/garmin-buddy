@@ -3,6 +3,8 @@ import zipfile
 import pyodbc
 import fitparse
 import pandas as pd
+import logging
+from pathlib import Path
 from sqlalchemy import text
 from datetime import datetime, timedelta
 from garminconnect import Garmin
@@ -10,18 +12,21 @@ from dotenv import load_dotenv
 from app.database.db_connector import SessionLocal
 from app.utils.converter import convert_m_to_km, convert_seconds_to_time, convert_speed_to_pace
 from app.services.garmin_connector import login_to_garmin
+from app.config import Config
 
-load_dotenv(override=True)
+# configuration = Config.from_env()
 
-fit_dir_name = "fit_files"
-fit_dir_path = os.getenv("FIT_DIR_PATH")
-garmin_email = os.getenv("GARMIN_EMAIL")
-garmin_password = os.getenv("GARMIN_PASSWORD")
-fit_dir_path
+# load_dotenv(override=True)
 
+# fit_dir_name = "fit_files"
+# fit_dir_path = os.getenv("FIT_DIR_PATH")
+# garmin_email = os.getenv("GARMIN_EMAIL")
+# garmin_password = os.getenv("GARMIN_PASSWORD")
+
+logger = logging.getLogger(__name__)
 
 def calculate_start_of_week(timestamp):
-    week_start = timestamp - pd.to_timedelta(timestamp.weekday(), unit='D')
+    week_start = timestamp - pd.to_timedelta(timestamp.weekday(), unit="D")
     return week_start
 
 def datetime_to_id(dt):
@@ -36,7 +41,7 @@ def check_if_activity_already_exists_in_db(checked_activity_timestamp):
     return checked_activity_timestamp in activities_timestamps_list
 
 
-def set_download_start_date():
+def set_download_start_date(fit_dir_path: Path):
     # to avoid circular dependency
     from app.services.db_service import get_latest_activity_date
     latest_activity_date_in_db = get_latest_activity_date()
@@ -46,7 +51,7 @@ def set_download_start_date():
 
     if not files:
         start_date = latest_activity_date_in_db
-        print(f"No local FIT files found in '{fit_dir_path}'. Using last DB date: {start_date}")
+        logger.info("No local FIT files found in %s. Using last DB date: %s", fit_dir_path, start_date)
         return start_date
 
     latest_file_name = sorted(files, reverse=True)[0]
@@ -57,18 +62,19 @@ def set_download_start_date():
     else:
         start_date = latest_activity_date_in_db
 
-    print(f"Date of last saved activity: {start_date}")
+    logger.info("Date of last saved activity: %s", start_date)
 
     return start_date
 
 
-def download_activities(refresh=True):
+def download_activities(configuration: Config, refresh=True):
 
-    garmin_connector = login_to_garmin(garmin_email, garmin_password)
+    garmin_connector = login_to_garmin(configuration.garmin_email, configuration.garmin_password)
+    # garmin_connector = login_to_garmin(garmin_email, garmin_password)
 
     today = datetime.now().date()
     if refresh is True:
-        start_date = set_download_start_date()
+        start_date = set_download_start_date(configuration.fit_dir_path)
     else:
         # take activities up to 2000 days ao
         start_date = today - timedelta(days=2000)
@@ -79,37 +85,37 @@ def download_activities(refresh=True):
     files = []
 
     for activity in activities:
-        activity_id = activity['activityId']
-        activity_type = activity['activityType']['typeKey']
+        activity_id = activity["activityId"]
+        activity_type = activity["activityType"]["typeKey"]
         start_time = datetime.strptime(
-            activity['startTimeLocal'], "%Y-%m-%d %H:%M:%S")
+            activity["startTimeLocal"], "%Y-%m-%d %H:%M:%S")
         activity_date = start_time.date()
 
         fit_data = garmin_connector.download_activity(
             activity_id, dl_fmt=Garmin.ActivityDownloadFormat.ORIGINAL)
 
         fit_path_zip = os.path.join(
-            fit_dir_path, f"{activity_date}_{activity_type}_{activity_id}.zip")
+            configuration.fit_dir_path, f"{activity_date}_{activity_type}_{activity_id}.zip")
 
-        print(f"FIT_DIR_PATH: {fit_dir_path}")
-        print(f"Saving ZIP to: {fit_path_zip}")
+        logger.info("FIT_DIR_PATH: %s", configuration.fit_dir_path)
+        logger.info("Saving ZIP to: %s", fit_path_zip)
 
         try:
             with open(fit_path_zip, "wb") as f:
                 f.write(fit_data)
-        except Exception as e:
-            print(f"Failed to save ZIP file '{fit_path_zip}': {e}")
+        except Exception:
+            logger.exception("Failed to save ZIP file %s", fit_path_zip)
 
         try:
-            with zipfile.ZipFile(fit_path_zip, 'r') as zip_ref:
+            with zipfile.ZipFile(fit_path_zip, "r") as zip_ref:
                 for member in zip_ref.namelist():
                     # Customize the name for each extracted file
 
                     new_filename = f"{activity_date}_{activity_type}_{activity_id}.fit"
-                    new_filepath = os.path.join(fit_dir_path, new_filename)
+                    new_filepath = os.path.join(configuration.fit_dir_path, new_filename)
 
                     # Extract and rename the file
-                    with zip_ref.open(member) as source, open(new_filepath, 'wb') as target:
+                    with zip_ref.open(member) as source, open(new_filepath, "wb") as target:
                         target.write(source.read())
 
                     files.append(new_filepath)
@@ -120,21 +126,21 @@ def download_activities(refresh=True):
             except FileNotFoundError:
                 pass
 
-        except Exception as e:
-            print(f"Failed to extract or remove ZIP '{fit_path_zip}': {e}")
+        except Exception:
+            logger.exception("Failed to extract or remove ZIP %s", fit_path_zip)
 
-    print(f"Files downloaded: {files}")
-    print("Activities download finished")
+    logger.info("Files downloaded: %s", files)
+    logger.info("Activities download finished")
 
     return files
 
 
-def _list_existing_fit_files():
+def _list_existing_fit_files(fit_dir_path: Path):
     files = []
     try:
         for f in os.listdir(fit_dir_path):
             full = os.path.join(fit_dir_path, f)
-            if os.path.isfile(full) and f.lower().endswith('.fit'):
+            if os.path.isfile(full) and f.lower().endswith(".fit"):
                 files.append(full)
     except FileNotFoundError:
         pass
@@ -180,13 +186,13 @@ def _get_garmin_activities_full_history(garmin_connector, start_date=None, end_d
             if activities:
                 all_activities.extend(activities)
         except Exception as e:
-            print(f"Failed to fetch activities for window {window_start} - {window_end}: {e}")
+            logger.exception("Failed to fetch activities for window %s - %s", window_start, window_end)
         window_start = window_end + timedelta(days=1)
 
     return all_activities
 
 
-def sync_all_activities():
+def sync_all_activities(configuration: Config):
     """
     Full sync:
     1) Get set of activity timestamps from DB
@@ -198,38 +204,38 @@ def sync_all_activities():
     Avoids duplicate downloads and ensures DB completeness.
     """
     
-    garmin_connector = login_to_garmin(garmin_email, garmin_password)
+    garmin_connector = login_to_garmin(configuration.garmin_email, configuration.garmin_password)
 
     # db_timestamps = _get_db_activity_timestamps_set()
     db_ids = _get_db_activity_ids_set()
     # start_date = datetime(2023, 11, 24).date()
     # end_date = datetime(2023, 11, 24).date()
     garmin_activities = _get_garmin_activities_full_history(garmin_connector)
-    existing_files = set(os.path.basename(p) for p in _list_existing_fit_files())
+    existing_files = set(os.path.basename(p) for p in _list_existing_fit_files(configuration.fit_dir_path))
 
     processed = []
 
     for activity in garmin_activities:
         try:
-            activity_id = activity['activityId']
-            activity_type = activity['activityType']['typeKey']
-            start_time = datetime.strptime(activity['startTimeGMT'], "%Y-%m-%d %H:%M:%S")
+            activity_id = activity["activityId"]
+            activity_type = activity["activityType"]["typeKey"]
+            start_time = datetime.strptime(activity["startTimeGMT"], "%Y-%m-%d %H:%M:%S")
             # print(f"Start time z biblioteki: {start_time}")
             activity_date = start_time.date()
-            # activity_start_temp = activity['startTimeLocal']
+            # activity_start_temp = activity["startTimeLocal"]
             # print(f"TYP: {type(activity_start_temp)}")
             activity_db_id = datetime_to_id(start_time)
 
             if activity_db_id in db_ids:
-                print("Activity already exists in DB")
+                logger.info("Activity %s already exists in DB.", activity_db_id)
                 continue
 
             fit_filename = _build_fit_filename(activity_date, activity_type, activity_id)
-            fit_filepath = os.path.join(fit_dir_path, fit_filename)
+            fit_filepath = os.path.join(configuration.fit_dir_path, fit_filename)
 
             if fit_filename in existing_files:
                 # File already downloaded; parse and save to DB
-                print("File already downloaded, but not saved in DB.")
+                logger.info("File %s already downloaded, but not saved in DB", fit_filename)
                 parse_and_save_file_to_db(fit_filepath)
                 processed.append(fit_filepath)
                 continue
@@ -239,36 +245,36 @@ def sync_all_activities():
                 activity_id, dl_fmt=Garmin.ActivityDownloadFormat.ORIGINAL)
 
             zip_filename = _build_zip_filename(activity_date, activity_type, activity_id)
-            fit_path_zip = os.path.join(fit_dir_path, zip_filename)
+            fit_path_zip = os.path.join(configuration.fit_dir_path, zip_filename)
 
             try:
                 with open(fit_path_zip, "wb") as f:
                     f.write(fit_data)
-            except Exception as e:
-                print(f"Failed to save ZIP file '{fit_path_zip}': {e}")
+            except Exception:
+                logger.exception("Failed to save ZIP file %s", fit_path_zip)
                 continue
 
             try:
-                with zipfile.ZipFile(fit_path_zip, 'r') as zip_ref:
+                with zipfile.ZipFile(fit_path_zip, "r") as zip_ref:
                     for member in zip_ref.namelist():
                         new_filepath = fit_filepath
-                        with zip_ref.open(member) as source, open(new_filepath, 'wb') as target:
+                        with zip_ref.open(member) as source, open(new_filepath, "wb") as target:
                             target.write(source.read())
                 try:
                     os.remove(fit_path_zip)
                 except FileNotFoundError:
                     pass
-            except Exception as e:
-                print(f"Failed to extract or remove ZIP '{fit_path_zip}': {e}")
+            except Exception:
+                logger.exception("Failed to extract or remove ZIP %s", fit_path_zip)
                 continue
 
             # Parse and save to DB
             parse_and_save_file_to_db(fit_filepath)
             processed.append(fit_filepath)
-        except Exception as e:
-            print(f"Failed processing activity: {e}")
+        except Exception:
+            logger.exception("Failed processing activity")
 
-    print(f"Synced activities (files processed): {len(processed)}")
+    logger.info("Synced activities (files processed): %d", len(processed))
     return processed
 
 def print_message_data(message_type, file_path):
@@ -278,7 +284,7 @@ def print_message_data(message_type, file_path):
     records = fitfile.get_messages(message_type)
 
     if not records:
-        print('No records in message type %s' % message_type)
+        print("No records in message type %s", message_type)
 
     for record in records:
         for record_field in record:
@@ -295,10 +301,10 @@ def print_message_data(message_type, file_path):
 
 
 def parse_fit_file(file_path):
-    print(f"Parsing {file_path}...")
+    logging.info(f"Parsing {file_path}...")
     fitfile = fitparse.FitFile(file_path)
 
-    message_types = ['activity', 'session']  # most important: session
+    message_types = ["activity", "session"]  # most important: session
 
     parsed_activity_data = {}
     for message_type in message_types:
@@ -309,16 +315,16 @@ def parse_fit_file(file_path):
 
             # print_message_data(message_type, file_path)
 
-    print("FULLY PARSED ACTIVITY DATA: \n %s \n" % parsed_activity_data)
+    logging.debug("FULLY PARSED ACTIVITY DATA: \n %s \n", parsed_activity_data)
 
     return parsed_activity_data
 
 
 def modify_subsport(sport, subsport):
-    if sport == 'hiking':
-        subsport = 'hiking'
-    if sport == 'running' and subsport == 'generic':
-        subsport = 'outdoor_running'
+    if sport == "hiking":
+        subsport = "hiking"
+    if sport == "running" and subsport == "generic":
+        subsport = "outdoor_running"
 
     return subsport
 
@@ -339,7 +345,7 @@ def prepare_activity_data_to_save_in_db(parsed_activity_data):
     activity_id = datetime_to_id(parsed_activity_data.get("start_time"))
 
     subsport = modify_subsport(parsed_activity_data.get(
-        'sport'), parsed_activity_data.get("sub_sport"))
+        "sport"), parsed_activity_data.get("sub_sport"))
 
     grade_adjusted_avg_pace_min_per_km = convert_speed_to_pace(
         parsed_activity_data.get("enhanced_avg_speed"))
@@ -369,7 +375,7 @@ def prepare_activity_data_to_save_in_db(parsed_activity_data):
         "running_efficiency_index": running_efficiency_index
     }
 
-    print(f"ACTIVITY DATA TO BE SAVED IN DB:\n {activity_data_to_save_in_db}")
+    logger.debug("Activity data being saved in DB:\n %s", activity_data_to_save_in_db)
 
     return activity_data_to_save_in_db
 
@@ -392,115 +398,115 @@ def save_activity_to_db(activity_data_to_save_in_db):
                 conn = session.connection()
                 conn.execute(query, activity_data_to_save_in_db)
                 conn.commit()
-            print("Activity %s_%s data saved in database sucessfully\n" % (
-                activity_data_to_save_in_db["sport"], activity_data_to_save_in_db["activity_date"]))
-        except pyodbc.ProgrammingError as e:
-            print("Failed to save activity %s_%s due to error: %s" % (
-                activity_data_to_save_in_db["sport"], activity_data_to_save_in_db["activity_date"], e))
+            logger.info("Activity %s_%s data saved in database sucessfully",
+                activity_data_to_save_in_db["sport"], activity_data_to_save_in_db["activity_date"])
+        except pyodbc.ProgrammingError:
+            logger.exception("Failed to save activity %s_%s due to error: %s", 
+                activity_data_to_save_in_db["sport"], activity_data_to_save_in_db["activity_date"])
     else:
-        print("Activity %s already exists in the database\n" %
+        logger.info("Activity %s already exists in the database",
               (activity_data_to_save_in_db["activity_start_time"]))
 
 
 def parse_and_save_file_to_db(fit_file_path):
 
-    with open(fit_file_path, 'rb') as f:
+    with open(fit_file_path, "rb") as f:
         header_data = f.read(12)
-        if header_data[8:12] == b'.FIT':
+        if header_data[8:12] == b".FIT":
             activity_data_to_save_in_db = prepare_activity_data_to_save_in_db(
                 parse_fit_file(fit_file_path))
             save_activity_to_db(
                 activity_data_to_save_in_db)
         else:
-            print(f"Invalid .fit file header: {fit_file_path}")
+            logger.exception("Invalid .fit file header: %s", fit_file_path)
 
 
 def review_fit_file_fields(file_path):
-    message_types = ['accelerometer_data',
-                     'activity',
-                     'ant_channel_id',
-                     'ant_rx',
-                     'ant_tx',
-                     'aviation_attitude',
-                     'barometer_data',
-                     'bike_profile',
-                     'blood_pressure',
-                     'cadence_zone',
-                     'camera_event',
-                     'capabilities',
-                     'connectivity',
-                     'course',
-                     'course_point',
-                      'device_info',
-                      'device_settings',
-                     'dive_alarm',
-                     'dive_gas',
-                     'dive_settings',
-                     'dive_summary',
-                     #  'event',
-                     'exd_data_concept_configuration',
-                     'exd_data_field_configuration',
-                     'exd_screen_configuration',
-                     'exercise_title',
-                     'field_capabilities',
-                     'file_capabilities',
-                      'file_creator',
-                     'goal',
-                     #  'gps_metadata',
-                     'gyroscope_data',
-                     'hr',
-                     'hr_zone',
-                     'hrm_profile',
-                     #  'lap',
-                     'length',
-                     'magnetometer_data',
-                     'memo_glob',
-                     'mesg_capabilities',
-                     'met_zone',
-                     'monitoring',
-                     'monitoring_info',
-                     'nmea_sentence',
-                     'obdii_data',
-                     'ohr_settings',
-                     'one_d_sensor_calibration',
-                     'power_zone',
-                     #  'record',
-                     'schedule',
-                     'sdm_profile',
-                     'segment_lap',
-                     'session',
-                     'set',
-                     'slave_device',
-                     'software',
-                     'speed_zone',
-                     'sport',
-                     'three_d_sensor_calibration',
-                     'timestamp_correlation',
-                     'totals',
-                     #  'user_profile',s
-                     'video',
-                     'video_clip',
-                     'video_description',
-                     'video_frame',
-                     'video_title',
-                     'watchface_settings',
-                     'weather_alert',
-                     'weather_conditions',
-                     'weight_scale',
-                     'workout',
-                     'workout_session',
-                     'workout_step',
-                     'zones_target']
+    message_types = ["accelerometer_data",
+                     "activity",
+                     "ant_channel_id",
+                     "ant_rx",
+                     "ant_tx",
+                     "aviation_attitude",
+                     "barometer_data",
+                     "bike_profile",
+                     "blood_pressure",
+                     "cadence_zone",
+                     "camera_event",
+                     "capabilities",
+                     "connectivity",
+                     "course",
+                     "course_point",
+                      "device_info",
+                      "device_settings",
+                     "dive_alarm",
+                     "dive_gas",
+                     "dive_settings",
+                     "dive_summary",
+                     #  "event",
+                     "exd_data_concept_configuration",
+                     "exd_data_field_configuration",
+                     "exd_screen_configuration",
+                     "exercise_title",
+                     "field_capabilities",
+                     "file_capabilities",
+                      "file_creator",
+                     "goal",
+                     #  "gps_metadata",
+                     "gyroscope_data",
+                     "hr",
+                     "hr_zone",
+                     "hrm_profile",
+                     #  "lap",
+                     "length",
+                     "magnetometer_data",
+                     "memo_glob",
+                     "mesg_capabilities",
+                     "met_zone",
+                     "monitoring",
+                     "monitoring_info",
+                     "nmea_sentence",
+                     "obdii_data",
+                     "ohr_settings",
+                     "one_d_sensor_calibration",
+                     "power_zone",
+                     #  "record",
+                     "schedule",
+                     "sdm_profile",
+                     "segment_lap",
+                     "session",
+                     "set",
+                     "slave_device",
+                     "software",
+                     "speed_zone",
+                     "sport",
+                     "three_d_sensor_calibration",
+                     "timestamp_correlation",
+                     "totals",
+                     #  "user_profile",s
+                     "video",
+                     "video_clip",
+                     "video_description",
+                     "video_frame",
+                     "video_title",
+                     "watchface_settings",
+                     "weather_alert",
+                     "weather_conditions",
+                     "weight_scale",
+                     "workout",
+                     "workout_session",
+                     "workout_step",
+                     "zones_target"]
 
     for message_type in message_types:
         print_message_data(message_type, file_path)
 
 
-if __name__ == '__main__':
-    # review_fit_file_fields('C:\\Users\\LSzata\\OneDrive - DXC Production\\Projects\\garmin\\fit-files\\2022-11-03_running_9911607177.fit')
+if __name__ == "__main__":
+    # review_fit_file_fields("C:\\Users\\LSzata\\OneDrive - DXC Production\\Projects\\garmin\\fit-files\\2022-11-03_running_9911607177.fit")
     # sync_all_activities()
     sync_all_activities()
-    # parse_fit_file('C:\\Users\\LSzata\\OneDrive - DXC Production\\Projects\\garmin\\fit-files\\2025-10-07_running_20618240154.fit')
+    # parse_fit_file("C:\\Users\\LSzata\\OneDrive - DXC Production\\Projects\\garmin\\fit-files\\2025-10-07_running_20618240154.fit")
     # fit_file_path_test = os.getenv("FIT_FILE_PATH_TEST")
     # parse_and_save_file_to_db(fit_file_path_test)
     # review_fit_file_fields(fit_file_path_test)

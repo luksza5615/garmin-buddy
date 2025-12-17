@@ -1,4 +1,5 @@
 import os
+import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
@@ -11,14 +12,14 @@ load_dotenv()
 db_connection_string = os.getenv("DB_CONNECTION_STRING")
 engine = create_engine(db_connection_string, pool_pre_ping=True)
 SessionLocal = sessionmaker(bind=engine)
-
+logger = logging.getLogger(__name__)
 
 @retry(
     stop=stop_after_attempt(5),
     wait=wait_fixed(2),
     retry=retry_if_exception_type(OperationalError),
-    before=lambda rs: print(f"DB connection attempt #{rs.attempt_number}"),
-    after=lambda rs: print(f"Attempt #{rs.attempt_number} finished")
+    before=lambda rs: logger.info(f"DB connection attempt #{rs.attempt_number}"),
+    after=lambda rs: logger.info(f"Attempt #{rs.attempt_number} finished")
 )
 def create_session_connection():
     session = SessionLocal()

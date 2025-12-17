@@ -1,17 +1,27 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
+import logging 
 from app.services.db_service import get_activities, get_top_activities, refresh_db, get_last_activity
 from app.services.garmin_service import sync_all_activities
 from app.services.llm_google_service import generate_response, build_prompt
 from app.services.weekly_analysis_service import analyze_training_period, get_training_summary
+from app.config import Config
 
 st.set_page_config(page_title='Garmin Buddy', layout='wide')
 
+configuration = Config.from_env()
+
+def setup_logging():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="format=%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+    )
+setup_logging()
 
 if st.button("Refresh database"):
     with st.spinner("Fetching last activities..."):
-        sync_all_activities()
+        sync_all_activities(configuration)
         # refresh_db()
 
 
