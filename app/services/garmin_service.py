@@ -9,19 +9,10 @@ from sqlalchemy import text
 from datetime import datetime, timedelta
 from garminconnect import Garmin
 from dotenv import load_dotenv
-from app.database.db_connector import SessionLocal
 from app.utils.converter import convert_m_to_km, convert_seconds_to_time, convert_speed_to_pace
 from app.services.garmin_connector import login_to_garmin
 from app.config import Config
-
-# configuration = Config.from_env()
-
-# load_dotenv(override=True)
-
-# fit_dir_name = "fit_files"
-# fit_dir_path = os.getenv("FIT_DIR_PATH")
-# garmin_email = os.getenv("GARMIN_EMAIL")
-# garmin_password = os.getenv("GARMIN_PASSWORD")
+from app.database.db_connector import Database
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +23,9 @@ def calculate_start_of_week(timestamp):
 def datetime_to_id(dt):
     return int(dt.strftime("%Y%m%d%H%M%S"))
 
-def check_if_activity_already_exists_in_db(checked_activity_timestamp):
+def check_if_activity_already_exists_in_db(database: Database, checked_activity_timestamp):
     from app.services.db_service import get_activity_timestamps
-    activities_rows_list = get_activity_timestamps()
+    activities_rows_list = get_activity_timestamps(database)
     activities_timestamps_list = [
         row.activity_start_time for row in activities_rows_list]
 
@@ -155,14 +146,14 @@ def _build_zip_filename(activity_date, activity_type, activity_id):
     return f"{activity_date}_{activity_type}_{activity_id}.zip"
 
 
-def _get_db_activity_timestamps_set():
+def _get_db_activity_timestamps_set(database: Database):
     from app.services.db_service import get_activity_timestamps
-    rows = get_activity_timestamps()
+    rows = get_activity_timestamps(database)
     return set([row.activity_start_time for row in rows])
 
-def _get_db_activity_ids_set():
+def _get_db_activity_ids_set(database: Database):
     from app.services.db_service import get_activity_ids
-    rows = get_activity_ids()
+    rows = get_activity_ids(database)
     return set([row.activity_id for row in rows])
 
 
@@ -192,7 +183,7 @@ def _get_garmin_activities_full_history(garmin_connector, start_date=None, end_d
     return all_activities
 
 
-def sync_all_activities(configuration: Config):
+def sync_all_activities(configuration: Config, database: Database):
     """
     Full sync:
     1) Get set of activity timestamps from DB
@@ -207,7 +198,7 @@ def sync_all_activities(configuration: Config):
     garmin_connector = login_to_garmin(configuration.garmin_email, configuration.garmin_password)
 
     # db_timestamps = _get_db_activity_timestamps_set()
-    db_ids = _get_db_activity_ids_set()
+    db_ids = _get_db_activity_ids_set(database)
     # start_date = datetime(2023, 11, 24).date()
     # end_date = datetime(2023, 11, 24).date()
     garmin_activities = _get_garmin_activities_full_history(garmin_connector)
@@ -236,7 +227,7 @@ def sync_all_activities(configuration: Config):
             if fit_filename in existing_files:
                 # File already downloaded; parse and save to DB
                 logger.info("File %s already downloaded, but not saved in DB", fit_filename)
-                parse_and_save_file_to_db(fit_filepath)
+                parse_and_save_file_to_db(database, fit_filepath)
                 processed.append(fit_filepath)
                 continue
 
@@ -269,7 +260,7 @@ def sync_all_activities(configuration: Config):
                 continue
 
             # Parse and save to DB
-            parse_and_save_file_to_db(fit_filepath)
+            parse_and_save_file_to_db(database, fit_filepath)
             processed.append(fit_filepath)
         except Exception:
             logger.exception("Failed processing activity")
@@ -380,8 +371,8 @@ def prepare_activity_data_to_save_in_db(parsed_activity_data):
     return activity_data_to_save_in_db
 
 
-def save_activity_to_db(activity_data_to_save_in_db):
-    if check_if_activity_already_exists_in_db(activity_data_to_save_in_db["activity_start_time"]) is False:
+def save_activity_to_db(database: Database, activity_data_to_save_in_db):
+    if check_if_activity_already_exists_in_db(database, activity_data_to_save_in_db["activity_start_time"]) is False:
         try:
             query = text("""INSERT INTO activity (
                         activity_id, activity_date, activity_start_time, sport, subsport, distance_in_km, elapsed_duration, 
@@ -408,15 +399,14 @@ def save_activity_to_db(activity_data_to_save_in_db):
               (activity_data_to_save_in_db["activity_start_time"]))
 
 
-def parse_and_save_file_to_db(fit_file_path):
+def parse_and_save_file_to_db(database: Database, fit_file_path):
 
     with open(fit_file_path, "rb") as f:
         header_data = f.read(12)
         if header_data[8:12] == b".FIT":
             activity_data_to_save_in_db = prepare_activity_data_to_save_in_db(
                 parse_fit_file(fit_file_path))
-            save_activity_to_db(
-                activity_data_to_save_in_db)
+            save_activity_to_db(database, activity_data_to_save_in_db)
         else:
             logger.exception("Invalid .fit file header: %s", fit_file_path)
 

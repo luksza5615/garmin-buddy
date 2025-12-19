@@ -2,30 +2,40 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
 import logging 
-from app.services.db_service import get_activities, get_top_activities, refresh_db, get_last_activity
+from app.services.db_service import get_activities
 from app.services.garmin_service import sync_all_activities
 from app.services.llm_google_service import generate_response, build_prompt
 from app.services.weekly_analysis_service import analyze_training_period, get_training_summary
-from app.config import Config
+from app.config import Config, ConfigError
+from app.database.db_connector import Database
 
 st.set_page_config(page_title='Garmin Buddy', layout='wide')
 
-configuration = Config.from_env()
 
 def setup_logging():
     logging.basicConfig(
         level=logging.INFO,
-        format="format=%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+        format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
     )
 setup_logging()
+logger = logging.getLogger(__name__)
+
+try:
+    configuration = Config.from_env()
+    database = Database.create_db(configuration)
+except ConfigError as e:
+    logger.error("%s", e)
+    st.error(str(e))
+    st.info("Set the missing env vars (or .env) and restart the app.")
+    st.stop()
 
 if st.button("Refresh database"):
     with st.spinner("Fetching last activities..."):
-        sync_all_activities(configuration)
+        sync_all_activities(configuration, database)
         # refresh_db()
 
 
-activities_df = get_activities().sort_values(
+activities_df = get_activities(database).sort_values(
     by="activity_start_time", ascending=False)
 
 

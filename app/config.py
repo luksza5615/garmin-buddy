@@ -6,11 +6,37 @@ from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
+class ConfigError(Exception):
+    def __init__(self, missing_vars: list[str]):
+        self.missing_vars = missing_vars
+        super().__init__(
+            f"Missing required variables: {', '.join(missing_vars)}"
+        )
+
 @dataclass(frozen=True)
 class Config:
     fit_dir_path: Path
     garmin_email: str
     garmin_password: str
+    db_connection_string: str
+
+    @staticmethod
+    def validate_vars(*, fit_dir_path, garmin_email, garmin_password, db_connection_string) -> None:
+
+        missing_vars: list[str] = []
+        if not fit_dir_path:
+            missing_vars.append("FIT_DIR_PATH")
+        if not garmin_email:
+            missing_vars.append("GARMIN_EMAIL")
+        if not garmin_password:
+            missing_vars.append("GARMIN_PASSWORD")
+        if not db_connection_string:
+            missing_vars.append("DB_CONNECTION_STRING")
+
+        if missing_vars:
+            raise ConfigError(missing_vars)
+
+        return None
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -22,22 +48,14 @@ class Config:
         garmin_password = os.getenv("GARMIN_PASSWORD")
         db_connection_string = os.getenv("DB_CONNECTION_STRING")
         
-        missing_vars = []
-        if not fit_path:
-            missing_vars.append("FIT_DIR_PATH")  
-        if not garmin_email:
-            missing_vars.append("GARMIN_EMAIL")
-        if not garmin_password:
-            missing_vars.append("GARMIN_PASSWORD")
-        
-        if missing_vars:
-            logging.exception("Mising vars: %s", missing_vars)
-            raise RuntimeError(
-                f"Missing required variables {', '.join(missing_vars)}"
-            )
+        Config.validate_vars(
+            fit_dir_path=fit_path, 
+            garmin_email=garmin_email, 
+            garmin_password=garmin_password, 
+            db_connection_string=db_connection_string)
 
         return cls(
-            fit_dir_path=fit_path,
+            fit_dir_path=Path(fit_path),
             garmin_email=garmin_email,
             garmin_password=garmin_password,
             db_connection_string=db_connection_string

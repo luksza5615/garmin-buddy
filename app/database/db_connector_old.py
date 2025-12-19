@@ -1,0 +1,42 @@
+import os
+import logging
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+from sqlalchemy.exc import OperationalError
+from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type, before, after
+from contextlib import contextmanager
+
+load_dotenv()
+
+db_connection_string = os.getenv("DB_CONNECTION_STRING")
+engine = create_engine(db_connection_string, pool_pre_ping=True)
+SessionLocal = sessionmaker(bind=engine)
+logger = logging.getLogger(__name__)
+
+@retry(
+    stop=stop_after_attempt(5),
+    wait=wait_fixed(2),
+    retry=retry_if_exception_type(OperationalError),
+    before=lambda rs: logger.info(f"DB connection attempt #{rs.attempt_number}"),
+    after=lambda rs: logger.info(f"Attempt #{rs.attempt_number} finished")
+)
+def create_session_connection():
+    session = SessionLocal()
+    conn = session.connection()
+    return session, conn
+
+
+@contextmanager
+def get_db_connection():
+    session = None
+    try:
+        session, conn = create_session_connection()
+        yield conn
+    finally:
+        if session:
+            session.close()
+
+
+def get_engine():
+    return create_engine(db_connection_string, pool_pre_ping=True, connect_args={"timeout": 60})
