@@ -2,9 +2,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
 import logging 
-# from app.services.db_service import get_activities
-# from app.services.garmin_service import sync_all_activities
-from app.services.llm_google_service import generate_response, build_prompt
+from app.ai.llm_google_service import generate_response, build_prompt
 from app.services.weekly_analysis_service import analyze_training_period, get_training_summary
 from app.services.sync_service import SyncService
 from app.services.db_service import ActivityRepository
@@ -36,10 +34,7 @@ except ConfigError as e:
 
 if st.button("Refresh database"):
     with st.spinner("Fetching last activities..."):
-        # sync_all_activities(configuration, database)
         sync_service.sync_activities(configuration, database)
-        # refresh_db()
-
 
 activities_df = activity_repository.get_activities(database).sort_values(
     by="activity_start_time", ascending=False)

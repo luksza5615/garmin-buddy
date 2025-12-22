@@ -155,16 +155,7 @@ class ActivityRepository:
 
                 with database.engine.begin() as conn:
                     conn.execute(query, activity_data_to_save_in_db)
-                    # conn.commit()
 
-                # with database.get_db_connection() as conn:
-                #     pd.read_sql_query(query, conn)
-                #     conn.commit()
-
-                # with SessionLocal() as session:
-                #     conn = session.connection()
-                #     conn.execute(query, activity_data_to_save_in_db)
-                #     conn.commit()
                 logger.info("Activity %s_%s data saved in database sucessfully",
                     activity_data_to_save_in_db["sport"], activity_data_to_save_in_db["activity_date"])
             except pyodbc.ProgrammingError:
@@ -173,14 +164,3 @@ class ActivityRepository:
         else:
             logger.info("Activity %s already exists in the database",
                 (activity_data_to_save_in_db["activity_start_time"]))
-
-    def parse_and_save_file_to_db(self, database: Database, filestore: FitFileStore, activity_mapper: ActivityMapper, fit_file_path):
-
-        with open(fit_file_path, "rb") as f:
-            header_data = f.read(12)
-            if header_data[8:12] == b".FIT":
-                activity_data_to_save_in_db = activity_mapper.prepare_activity_data_to_save_in_db(
-                    filestore.parse_fit_file(fit_file_path))
-                self.save_activity_to_db(database, activity_data_to_save_in_db)
-            else:
-                logger.exception("Invalid .fit file header: %s", fit_file_path)

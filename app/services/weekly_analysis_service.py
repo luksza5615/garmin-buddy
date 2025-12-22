@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
-from app.services.llm_google_service import generate_response
+from app.ai.llm_google_service import generate_response
 
 
 class WeeklyAnalysisService:

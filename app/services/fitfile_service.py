@@ -28,6 +28,11 @@ class FitFileStore:
         return f"{activity_date}_{activity_type}_{activity_id}.zip"
 
     def parse_fit_file(self, file_path):
+        with open(file_path, "rb") as f:
+            header_data = f.read(12)
+            if header_data[8:12] != b".FIT":
+                logger.exception("Invalid .fit file header: %s", file_path)
+        
         logging.info(f"Parsing {file_path}...")
         fitfile = fitparse.FitFile(file_path)
 

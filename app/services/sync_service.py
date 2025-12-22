@@ -40,10 +40,7 @@ class SyncService():
         activity_mapper = ActivityMapper()
         activity_repository = ActivityRepository()
 
-        # db_timestamps = _get_db_activity_timestamps_set()
         db_ids = activity_repository.get_db_activity_ids_set(database)
-        # start_date = datetime(2023, 11, 24).date()
-        # end_date = datetime(2023, 11, 24).date()
         garmin_activities = garmin_client.get_garmin_activities_full_history(garmin_connector)
         existing_files = set(os.path.basename(p) for p in filestore.list_existing_fit_files(configuration.fit_dir_path))
 
@@ -70,7 +67,9 @@ class SyncService():
                 if fit_filename in existing_files:
                     # File already downloaded; parse and save to DB
                     logger.info("File %s already downloaded, but not saved in DB", fit_filename)
-                    activity_repository.parse_and_save_file_to_db(database, filestore, activity_mapper, fit_filepath)
+                    parsed_activity = filestore.parse_fit_file(fit_filepath)
+                    actitity_to_save = activity_mapper.prepare_activity_data_to_save_in_db(parsed_activity)
+                    activity_repository.save_activity_to_db(database, actitity_to_save)
                     processed.append(fit_filepath)
                     continue
 
@@ -103,7 +102,10 @@ class SyncService():
                     continue
 
                 # Parse and save to DB
-                activity_repository.parse_and_save_file_to_db(database, fit_filepath)
+                parsed_activity = filestore.parse_fit_file(fit_filepath)
+                actitity_to_save = activity_mapper.prepare_activity_data_to_save_in_db(parsed_activity)
+                activity_repository.save_activity_to_db(database, actitity_to_save)
+
                 processed.append(fit_filepath)
             except Exception:
                 logger.exception("Failed processing activity")
