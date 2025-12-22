@@ -1,7 +1,6 @@
 import os
 from google import genai
 from dotenv import load_dotenv
-from app.services.db_service  import get_last_activity
 
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")

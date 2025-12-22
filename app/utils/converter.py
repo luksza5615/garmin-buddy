@@ -1,3 +1,12 @@
+import pandas as pd
+
+def calculate_start_of_week(timestamp):
+    week_start = timestamp - pd.to_timedelta(timestamp.weekday(), unit="D")
+    return week_start
+
+def datetime_to_id(dt):
+    return int(dt.strftime("%Y%m%d%H%M%S"))
+
 def convert_speed_to_pace(speed_in_m_s):
     converted_speed = "-"
 
@@ -58,3 +67,4 @@ def convert_m_to_km(value_in_m):
         return f"{value_in_km:.2f}"
     except Exception:
         return f"{0.0:.2f}"
+

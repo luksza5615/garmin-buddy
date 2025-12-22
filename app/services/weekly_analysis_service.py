@@ -1,7 +1,6 @@
 import pandas as pd
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
-from app.services.db_service import get_activities_last_x_days
 from app.services.llm_google_service import generate_response
 
 
