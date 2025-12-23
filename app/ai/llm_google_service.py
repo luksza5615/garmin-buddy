@@ -24,14 +24,6 @@ def generate_response_based_on_file():
 
     return response.text
 
-def get_workout_data():
-    activity = get_last_activity()
-    activity_details = activity.iloc[0].to_dict()
-    print(activity_details)
-
-    return activity_details
-
-
 workout_example = {
     "avg_heart_rate": 150,
     "avg_pace": "5:30"

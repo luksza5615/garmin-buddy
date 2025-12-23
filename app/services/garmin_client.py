@@ -1,14 +1,26 @@
 
 import logging
 from datetime import datetime, timedelta
+from garminconnect import Garmin
 
 logger = logging.getLogger(__name__)
 
 class GarminClient:
-    def __init__(self):
-        pass
+    def __init__(self, email, password):
+        self.email = email
+        self.password = password
     
-    def get_garmin_activities_full_history(self, garmin_connector, start_date=None, end_date=None, window_days=90):
+    def login_to_garmin(self):
+        try:
+            garmin_connection = Garmin(self.email, self.password)
+            garmin_connection.login()
+            logger.info("Connected to garmin")
+            return garmin_connection
+        except Exception:
+            logger.exception("Failed to connect.")
+            raise
+
+    def get_garmin_activities_full_history(self, garmin_connection, start_date=None, end_date=None, window_days=90):
         """
         Fetch activities across full history by paging through date windows.
         If start_date is None, default to a far past date.
@@ -23,7 +35,7 @@ class GarminClient:
         while window_start <= end_date:
             window_end = min(window_start + timedelta(days=window_days), end_date)
             try:
-                activities = garmin_connector.get_activities_by_date(
+                activities = garmin_connection.get_activities_by_date(
                     window_start.isoformat(), window_end.isoformat())
                 if activities:
                     all_activities.extend(activities)

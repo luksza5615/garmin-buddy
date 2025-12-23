@@ -1,21 +1,21 @@
 import logging
 from app.config import Config
-from app.services.garmin_connector import login_to_garmin
 from app.services.db_service import Database
 from app.services.garmin_client import GarminClient
-from app.services.fitfile_service  import FitFileStore
-from app.services.activity_service import ActivityMapper
+from app.config import Config
+from app.database.db_connector import Database
+from app.services.fit_filestore import FitFileStore
+from app.services.activity_mapper import ActivityMapper
+from app.services.fit_parser import FitParser
 from app.services.db_service import ActivityRepository
 from app.utils.converter import datetime_to_id
 import os
 import zipfile
 import logging
 from sqlalchemy import text
-from datetime import datetime, timedelta
+from datetime import datetime
 from garminconnect import Garmin
-from app.services.garmin_connector import login_to_garmin
-from app.config import Config
-from app.database.db_connector import Database
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,14 +34,15 @@ class SyncService():
         - Else, download, extract .fit, parse & save
         Avoids duplicate downloads and ensures DB completeness.
         """
-        garmin_connector = login_to_garmin(configuration.garmin_email, configuration.garmin_password)
+        garmin_client = GarminClient(configuration.garmin_email, configuration.garmin_password)
+        garmin_connection = garmin_client.login_to_garmin()
         filestore = FitFileStore()
-        garmin_client = GarminClient()
+        fit_parser = FitParser()
         activity_mapper = ActivityMapper()
         activity_repository = ActivityRepository()
 
         db_ids = activity_repository.get_db_activity_ids_set(database)
-        garmin_activities = garmin_client.get_garmin_activities_full_history(garmin_connector)
+        garmin_activities = garmin_client.get_garmin_activities_full_history(garmin_connection)
         existing_files = set(os.path.basename(p) for p in filestore.list_existing_fit_files(configuration.fit_dir_path))
 
         processed = []
@@ -67,14 +68,14 @@ class SyncService():
                 if fit_filename in existing_files:
                     # File already downloaded; parse and save to DB
                     logger.info("File %s already downloaded, but not saved in DB", fit_filename)
-                    parsed_activity = filestore.parse_fit_file(fit_filepath)
-                    actitity_to_save = activity_mapper.prepare_activity_data_to_save_in_db(parsed_activity)
-                    activity_repository.save_activity_to_db(database, actitity_to_save)
+                    parsed_activity = fit_parser.parse_fit_file(fit_filepath)
+                    activity = activity_mapper.from_parsed_fit(parsed_activity)
+                    activity_repository.save_activity_to_db(database, activity)
                     processed.append(fit_filepath)
                     continue
 
                 # Download from Garmin as ZIP, then extract to .fit
-                fit_data = garmin_connector.download_activity(
+                fit_data = garmin_connection.download_activity(
                     activity_id, dl_fmt=Garmin.ActivityDownloadFormat.ORIGINAL)
 
                 zip_filename = filestore.build_zip_filename(activity_date, activity_type, activity_id)
@@ -102,9 +103,9 @@ class SyncService():
                     continue
 
                 # Parse and save to DB
-                parsed_activity = filestore.parse_fit_file(fit_filepath)
-                actitity_to_save = activity_mapper.prepare_activity_data_to_save_in_db(parsed_activity)
-                activity_repository.save_activity_to_db(database, actitity_to_save)
+                parsed_activity = fit_parser.parse_fit_file(fit_filepath)
+                activity = activity_mapper.from_parsed_fit(parsed_activity)
+                activity_repository.save_activity_to_db(database, activity)
 
                 processed.append(fit_filepath)
             except Exception:
@@ -112,3 +113,4 @@ class SyncService():
 
         logger.info("Synced activities (files processed): %d", len(processed))
         return processed
+  

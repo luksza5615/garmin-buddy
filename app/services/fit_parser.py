@@ -1,31 +1,11 @@
 import logging
-import os
 import fitparse
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-class FitFileStore:
+class FitParser:
     def __init__(self):
         pass
-
-    def list_existing_fit_files(self, fit_dir_path: Path):
-        files = []
-        try:
-            for f in os.listdir(fit_dir_path):
-                full = os.path.join(fit_dir_path, f)
-                if os.path.isfile(full) and f.lower().endswith(".fit"):
-                    files.append(full)
-        except FileNotFoundError:
-            pass
-        return files
-    
-    def build_fit_filename(self, activity_date, activity_type, activity_id):
-        return f"{activity_date}_{activity_type}_{activity_id}.fit"
-
-
-    def build_zip_filename(self, activity_date, activity_type, activity_id):
-        return f"{activity_date}_{activity_type}_{activity_id}.zip"
 
     def parse_fit_file(self, file_path):
         with open(file_path, "rb") as f:
@@ -38,18 +18,16 @@ class FitFileStore:
 
         message_types = ["activity", "session"]  # most important: session
 
-        parsed_activity_data = {}
+        parsed_activity = {}
         for message_type in message_types:
             for record in fitfile.get_messages(message_type):
                 for field in record:
                     if field.name and field.value is not None:
-                        parsed_activity_data[field.name] = field.value
+                        parsed_activity[field.name] = field.value
 
-                # print_message_data(message_type, file_path)
+        logging.debug("FULLY PARSED ACTIVITY DATA: \n %s \n", parsed_activity)
 
-        logging.debug("FULLY PARSED ACTIVITY DATA: \n %s \n", parsed_activity_data)
-
-        return parsed_activity_data
+        return parsed_activity
 
     def print_message_data(self, message_type, file_path):
         print(f"Message type: {message_type}")
