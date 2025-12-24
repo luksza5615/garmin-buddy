@@ -32,7 +32,7 @@ class FitFileStore:
 
 if __name__ == '__main__':
     fitservice = FitFileStore()
-    path = "C:\\Users\\LSzata\\OneDrive - DXC Production\\Projects\\garmin\\garmin-buddy\\tests\\app_test\\services\\resources\\2025-03-25_running_18635294298.fit"
+    path = "C:\\Users\\LSzata\\OneDrive - DXC Production\\Projects\\garmin\\fit-files\\2023-11-24_multi_sport_12859996495.fit"
     from app.services.db_service import ActivityRepository
     from app.services.activity_mapper import ActivityMapper
     from app.database.db_connector import Database
@@ -40,11 +40,13 @@ if __name__ == '__main__':
     from app.services.fit_parser import FitParser
     parser = FitParser()
     parsed = parser.parse_fit_file(path)
+    # print(parsed)
     activity_mapper = ActivityMapper()
     activity_to_save = activity_mapper.from_parsed_fit(parsed)
-    repository = ActivityRepository()
-    configuration = Config.from_env()
-    from app.services.sync_service import SyncService
-    sync_service = SyncService()
-    database = Database.create_db(configuration)
-    sync_service.sync_activities(configuration, database)
+    print(activity_to_save)
+    # repository = ActivityRepository()
+    # configuration = Config.from_env()
+    # from app.services.sync_service import SyncService
+    # sync_service = SyncService()
+    # database = Database.create_db(configuration)
+    # sync_service.sync_activities(configuration, database)

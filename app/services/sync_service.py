@@ -12,10 +12,8 @@ from app.utils.converter import datetime_to_id
 import os
 import zipfile
 import logging
-from sqlalchemy import text
 from datetime import datetime
 from garminconnect import Garmin
-
 
 logger = logging.getLogger(__name__)
 
@@ -24,16 +22,7 @@ class SyncService():
         pass
 
     def sync_activities(self, configuration: Config, database: Database):
-        """
-        Full sync:
-        1) Get set of activity timestamps from DB
-        2) Get full activity list from Garmin (paged by date windows)
-        3) For each Garmin activity:
-        - If timestamp in DB: skip
-        - Else, if corresponding .fit file exists: parse & save to DB
-        - Else, download, extract .fit, parse & save
-        Avoids duplicate downloads and ensures DB completeness.
-        """
+
         garmin_client = GarminClient(configuration.garmin_email, configuration.garmin_password)
         garmin_connection = garmin_client.login_to_garmin()
         filestore = FitFileStore()

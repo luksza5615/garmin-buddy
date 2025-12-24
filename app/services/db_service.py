@@ -11,13 +11,11 @@ class ActivityRepository:
     def __init__(self) -> None:
         pass
 
-    def check_if_activity_already_exists_in_db(self, database: Database, activity_timestamp):
-        activities_rows_list = self.get_activity_timestamps(database)
-        activities_timestamps_list = [
-            row.activity_start_time for row in activities_rows_list]
+    def check_if_activity_exists_in_db(self, database: Database, activity_id):
+        activities_rows_list = self.get_activity_ids(database)
+        activities_ids_list = [row.activity_id for row in activities_rows_list]
 
-        return activity_timestamp in activities_timestamps_list
-
+        return activity_id in activities_ids_list
 
     def get_activities(self, database: Database):
         query = "SELECT * FROM activity ORDER BY activity_start_time DESC"
@@ -26,16 +24,6 @@ class ActivityRepository:
             activities = pd.read_sql_query(query, conn)
 
         return activities
-
-    def get_activity_timestamps(self, database: Database): 
-        query = "SELECT activity_start_time FROM dbo.activity"
-
-        with database.get_db_connection() as conn:
-            timestamps = conn.execute(
-                text(query)
-            ).fetchall()
-
-        return timestamps
 
     def get_activity_ids(self, database: Database):
         query = "SELECT activity_id FROM dbo.activity"
@@ -47,7 +35,10 @@ class ActivityRepository:
 
         return activity_ids
 
-
+    def get_db_activity_ids_set(self, database: Database):
+        rows = self.get_activity_ids(database)
+        return set([row.activity_id for row in rows])
+        
     def get_activities_last_x_days(self, database: Database, days: int = 7):
 
         query = text("""
@@ -63,10 +54,6 @@ class ActivityRepository:
 
         return activities
 
-    def get_db_activity_ids_set(self, database: Database):
-        rows = self.get_activity_ids(database)
-        return set([row.activity_id for row in rows])
-
     def get_aggregated_data(self, database: Database, agg_period):
         query = """
             SELECT start_of_week, sum(distance_in_km) as suma
@@ -81,7 +68,7 @@ class ActivityRepository:
     
     def save_activity_to_db(self, database: Database, activity):
 
-        if self.check_if_activity_already_exists_in_db(database, activity.activity_start_time) is False:
+        if self.check_if_activity_exists_in_db(database, activity.activity_id) is False:
             try:
                 query = text("""INSERT INTO activity (
                             activity_id, activity_date, activity_start_time, sport, subsport, distance_in_km, elapsed_duration, 

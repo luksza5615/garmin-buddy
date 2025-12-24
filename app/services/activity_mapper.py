@@ -24,8 +24,8 @@ class ActivityMapper:
         calories_burnt = parsed_activity["total_calories"]
         aerobic_training_effect_0_to_5 = parsed_activity["total_training_effect"]
         anaerobic_training_effect_0_to_5 = parsed_activity["total_anaerobic_training_effect"]
-        total_ascent_in_meters = 0
-        total_descent_in_meters = 0 #parsed_activity["total_descent"]
+        total_ascent_in_meters = parsed_activity.get("total_descent", 0)
+        total_descent_in_meters = parsed_activity.get("total_descent", 0)
         start_of_week = calculate_start_of_week(parsed_activity["timestamp"])
         running_efficiency_index = self.calculate_efficiency_index(parsed_activity["sport"], convert_speed_to_pace(parsed_activity["enhanced_avg_speed"]), parsed_activity["avg_heart_rate"])
         

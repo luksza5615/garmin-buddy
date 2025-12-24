@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import date, time, timedelta
-from app.utils.converter import datetime_to_id, convert_m_to_km, calculate_start_of_week, convert_seconds_to_time, convert_speed_to_pace
 
 @dataclass
 class Activity:
