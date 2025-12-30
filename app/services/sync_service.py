@@ -1,105 +1,75 @@
 import logging
-from app.config import Config
-from app.services.db_service import Database
-from app.services.garmin_client import GarminClient
+import os
+
+from app.services.db_service import ActivityRepository
+from app.services.activity_mapper import ActivityMapper
 from app.config import Config
 from app.database.db_connector import Database
 from app.services.fit_filestore import FitFileStore
-from app.services.activity_mapper import ActivityMapper
 from app.services.fit_parser import FitParser
-from app.services.db_service import ActivityRepository
-from app.utils.converter import datetime_to_id
-import os
-import zipfile
-import logging
-from datetime import datetime
-from garminconnect import Garmin
+from app.services.garmin_client import GarminClient
 
 logger = logging.getLogger(__name__)
 
-class SyncService():
-    def __init__(self):
-        pass
+class SyncService:
+    def __init__(
+        self, 
+        configuration: Config, 
+        database: Database, 
+        garmin_client: GarminClient, 
+        fit_filestore: FitFileStore, 
+        fit_parser: FitParser, 
+        activity_mapper: ActivityMapper, 
+        activity_repository: ActivityRepository
+    ):
+        self.configuration = configuration
+        self.database = database
+        self.garmin_client = garmin_client
+        self.fit_filestore = fit_filestore
+        self.fit_parser = fit_parser
+        self.activity_mapper = activity_mapper
+        self.activity_repository = activity_repository
 
-    def sync_activities(self, configuration: Config, database: Database):
+    def sync_activities(self) -> None:
+        self.garmin_client.login_to_garmin()
+        garmin_activities = self.garmin_client.get_garmin_activities_full_history()
+        db_ids_set = self.activity_repository.get_db_activity_ids_set(self.database)
+        existing_files_set = self.fit_filestore.list_existing_fit_files_ids_set()
 
-        garmin_client = GarminClient(configuration.garmin_email, configuration.garmin_password)
-        garmin_connection = garmin_client.login_to_garmin()
-        filestore = FitFileStore()
-        fit_parser = FitParser()
-        activity_mapper = ActivityMapper()
-        activity_repository = ActivityRepository()
+        persisted_activities = []
 
-        db_ids = activity_repository.get_db_activity_ids_set(database)
-        garmin_activities = garmin_client.get_garmin_activities_full_history(garmin_connection)
-        existing_files = set(os.path.basename(p) for p in filestore.list_existing_fit_files(configuration.fit_dir_path))
-
-        processed = []
-
-        for activity in garmin_activities:
+        for garmin_activity in garmin_activities:
             try:
-                activity_id = activity["activityId"]
-                activity_type = activity["activityType"]["typeKey"]
-                start_time = datetime.strptime(activity["startTimeGMT"], "%Y-%m-%d %H:%M:%S")
-                # print(f"Start time z biblioteki: {start_time}")
-                activity_date = start_time.date()
-                # activity_start_temp = activity["startTimeLocal"]
-                # print(f"TYP: {type(activity_start_temp)}")
-                activity_db_id = datetime_to_id(start_time)
-
-                if activity_db_id in db_ids:
-                    logger.info("Activity %s already exists in DB.", activity_db_id)
+                garmin_activity_id, garmin_activity_type, garmin_activity_date = self.garmin_client.get_activity_signature(garmin_activity)
+                
+                # If activity already persisted in db, skip it
+                if garmin_activity_id in db_ids_set:
+                    logger.info("Activity %s already exists in DB.", garmin_activity_id)
                     continue
 
-                fit_filename = filestore.build_fit_filename(activity_date, activity_type, activity_id)
-                fit_filepath = os.path.join(configuration.fit_dir_path, fit_filename)
+                fit_filename = self.fit_filestore.build_fit_filename(garmin_activity_date, garmin_activity_type, garmin_activity_id)
+                fit_filepath = os.path.join(self.configuration.fit_dir_path, fit_filename)
 
-                if fit_filename in existing_files:
-                    # File already downloaded; parse and save to DB
+                # If activity not persisted in db, but fit file already downloaded, parse and save to DB without processing file
+                if garmin_activity_id in existing_files_set:
                     logger.info("File %s already downloaded, but not saved in DB", fit_filename)
-                    parsed_activity = fit_parser.parse_fit_file(fit_filepath)
-                    activity = activity_mapper.from_parsed_fit(parsed_activity)
-                    activity_repository.save_activity_to_db(database, activity)
-                    processed.append(fit_filepath)
+                    self._parse_and_persist(fit_filepath, garmin_activity_id)
+                    db_ids_set.add(garmin_activity_id)
+                    persisted_activities.append(fit_filepath)
                     continue
 
-                # Download from Garmin as ZIP, then extract to .fit
-                fit_data = garmin_connection.download_activity(
-                    activity_id, dl_fmt=Garmin.ActivityDownloadFormat.ORIGINAL)
-
-                zip_filename = filestore.build_zip_filename(activity_date, activity_type, activity_id)
-                fit_path_zip = os.path.join(configuration.fit_dir_path, zip_filename)
-
-                try:
-                    with open(fit_path_zip, "wb") as f:
-                        f.write(fit_data)
-                except Exception:
-                    logger.exception("Failed to save ZIP file %s", fit_path_zip)
-                    continue
-
-                try:
-                    with zipfile.ZipFile(fit_path_zip, "r") as zip_ref:
-                        for member in zip_ref.namelist():
-                            new_filepath = fit_filepath
-                            with zip_ref.open(member) as source, open(new_filepath, "wb") as target:
-                                target.write(source.read())
-                    try:
-                        os.remove(fit_path_zip)
-                    except FileNotFoundError:
-                        pass
-                except Exception:
-                    logger.exception("Failed to extract or remove ZIP %s", fit_path_zip)
-                    continue
-
-                # Parse and save to DB
-                parsed_activity = fit_parser.parse_fit_file(fit_filepath)
-                activity = activity_mapper.from_parsed_fit(parsed_activity)
-                activity_repository.save_activity_to_db(database, activity)
-
-                processed.append(fit_filepath)
+                fit_zip_file = self.garmin_client.download_activity_as_zip_file(garmin_activity_id)
+                self.fit_filestore.create_fit_file_from_zip(fit_zip_file, garmin_activity, fit_filepath, self.garmin_client)
+                existing_files_set.add(garmin_activity_id)
+                self._parse_and_persist(fit_filepath, garmin_activity_id)
+                db_ids_set.add(garmin_activity_id)
+                persisted_activities.append(fit_filepath)
             except Exception:
-                logger.exception("Failed processing activity")
-
-        logger.info("Synced activities (files processed): %d", len(processed))
-        return processed
-  
+                logger.exception("Failed processing activity: %s", fit_filename)
+            
+        logger.info("Synced activities (files processed): %d", len(persisted_activities))
+ 
+    def _parse_and_persist(self, fit_filepath: str, activity_id: int) -> None:
+        parsed_activity = self.fit_parser.parse_fit_file(fit_filepath)
+        activity_model = self.activity_mapper.from_parsed_fit(activity_id, parsed_activity)
+        self.activity_repository.save_activity_to_db(self.database, activity_model)

@@ -8,6 +8,11 @@ from app.services.sync_service import SyncService
 from app.services.db_service import ActivityRepository
 from app.config import Config, ConfigError
 from app.database.db_connector import Database
+from app.services.activity_mapper import ActivityMapper
+from app.database.db_connector import Database
+from app.services.fit_filestore import FitFileStore
+from app.services.fit_parser import FitParser
+from app.services.garmin_client import GarminClient
 
 st.set_page_config(page_title='Garmin Buddy', layout='wide')
 
@@ -20,12 +25,18 @@ def setup_logging():
 setup_logging()
 logger = logging.getLogger(__name__)
 
-sync_service = SyncService()
+
 
 try:
     configuration = Config.from_env()
     database = Database.create_db(configuration)
     activity_repository = ActivityRepository()
+    garmin_client = GarminClient(configuration.garmin_email, configuration.garmin_password)
+    filestore = FitFileStore(configuration)
+    fit_parser = FitParser()
+    activity_mapper = ActivityMapper()
+    activity_repository = ActivityRepository()
+    sync_service = SyncService(configuration, database, garmin_client, filestore, fit_parser, activity_mapper, activity_repository)
 except ConfigError as e:
     logger.error("%s", e)
     st.error(str(e))
@@ -34,7 +45,7 @@ except ConfigError as e:
 
 if st.button("Refresh database"):
     with st.spinner("Fetching last activities..."):
-        sync_service.sync_activities(configuration, database)
+        sync_service.sync_activities()
 
 activities_df = activity_repository.get_activities(database).sort_values(
     by="activity_start_time", ascending=False)
