@@ -18,6 +18,6 @@ zzzignored/
 resources/
 tree-maker/
 
-
 docs/roles_skills.md
 docs/definition_of_done.md
+notebooks/test.ipynb

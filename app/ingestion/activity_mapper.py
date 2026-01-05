@@ -1,7 +1,7 @@
 import logging
 from typing import Any
 
-from app.models.activity import Activity
+from app.domain.activity import Activity
 from app.utils.converter import (
     convert_m_to_km, 
     calculate_start_of_week, 
@@ -28,7 +28,7 @@ class ActivityMapper:
         total_ascent_in_meters = parsed_activity.get("total_ascent")
         total_descent_in_meters = parsed_activity.get("total_descent")
         start_of_week = calculate_start_of_week(activity_start_time)
-        running_efficiency_index = self._calculate_running_efficiency_index(sport, convert_speed_to_pace(grade_adjusted_avg_pace_min_per_km), avg_heart_rate)
+        running_efficiency_index = self._calculate_running_efficiency_index(sport, grade_adjusted_avg_pace_min_per_km, avg_heart_rate)
         
         return Activity(
             activity_id=activity_id,

@@ -1,20 +1,16 @@
 # Garmin-Buddy 🏃‍♂️📊🤖
 
-Garmin-Buddy is a Python-based **data + AI application** that ingests my Garmin activity data, stores and models it in a relational database, computes training metrics, and uses **LLMs** to generate **actionable training insights**. It also includes a simple **data app UI** for reviewing recent activities, trends, and AI-generated summaries.
-
-This is both:
-- a **personal training companion** (analysis + planning support), and
-- a **portfolio project** proving end-to-end skills in **data engineering + AI integration + cloud + product thinking**.
+Garmin-Buddy is a Python-based **data + AI application** that ingests my Garmin activity data, stores and models it in a relational database, computes training metrics, and uses **LLMs** to generate **training insights**. It also includes a simple **data app UI** for reviewing recent activities, trends, and AI-generated summaries.
 
 ---
 
 ## What problem it solves
 
 Garmin gives you lots of data, but turning it into **decisions** is harder:
-- What’s the real training load trend over time?
-- Am I accumulating fatigue or adapting?
-- How does my intensity distribution look vs. plan?
 - What should I change next week given my history?
+- Is the training load distributed well over time?
+- Is the training execution aligned with intended stimuli?
+
 
 Garmin-Buddy turns raw activity logs into:
 - structured metrics and trends, and
@@ -25,8 +21,8 @@ Garmin-Buddy turns raw activity logs into:
 ## High-level architecture
 
 **Flow**
-1. Ingest activities from Garmin (API + exported files)
-2. Store raw + processed data in a relational DB (Azure SQL)
+1. Ingest activities from Garmin API
+2. Store processed data in a relational DB (Azure SQL)
 3. Compute training metrics (weekly load, intensity distribution, trends)
 4. Use AI layer (LLM + retrieval) to generate insights and planning suggestions
 5. Present results in a simple UI (Streamlit)
@@ -35,33 +31,30 @@ Garmin-Buddy turns raw activity logs into:
 - **Ingestion**: Garmin API / FIT parsing
 - **Processing**: metrics, transformations, aggregation
 - **Database**: SQLAlchemy models + migrations
-- **AI Engine**: prompts + structured output + optional RAG over training history
+- **AI Engine**: prompts + structured output + RAG over training history
 - **UI**: Streamlit dashboard
 
-> A diagram lives in `docs/architecture.md` (or will, if you haven’t added it yet).
+![Architecture](docs/architecture.drawio.svg)
+
 
 ---
 
-## What this project demonstrates (for hiring)
+## What this project incorporates 
 
-This repository is intentionally built to demonstrate capabilities aligned to roles like:
-**AI-Enabled Data Product Builder**, **AI Solutions Analyst**, **Data App Engineer**, **LLM Integrator**.
-
-Concrete signals:
 - **Data ingestion & ETL** (external data → normalized storage → analytics-ready tables)
 - **Relational modeling** (SQL schema design, migrations, consistency)
 - **Analytical feature engineering** (training metrics that support decisions)
-- **LLM integration** (structured outputs, prompt design, reliability)
+- **LLM integration** (structured outputs, prompt design)
 - **RAG** (injecting relevant historical context into AI reasoning)
-- **Data app UI** (decision-support dashboard, not just scripts)
-- **Production mindset** (config management, logging, error handling, CI-ready structure)
+- **Data app UI** (decision-support dashboard)
 - **Cloud deployment** (Azure-friendly setup)
+- **Production mindset** (config management, logging, error handling, CI-ready structure)
 
 ---
 
-## Features
+## Key Features
 
-### Current / Core
+### Current 
 - Garmin activity ingestion (API / FIT files)
 - Storage in SQL database (Azure SQL)
 - Basic computed metrics (distance, time, pace, trends)
@@ -81,12 +74,10 @@ Concrete signals:
 ```text
 garmin-buddy/
 ├── app/
-│   ├── config/          # env loading, settings, logging setup
-│   ├── ingestion/       # Garmin API, FIT loading/parsing
-│   ├── processing/      # transformations, metrics, aggregations
+│   ├── services/       # Garmin API, FIT loading/parsing, transformations
 │   ├── ai/              # prompts, LLM clients, RAG, evaluations
-│   ├── db/              # SQLAlchemy models, session, migrations
-│   └── ui/              # Streamlit app
+│   ├── database/              # SQLAlchemy models, session, migrations
+├── ui/                  # Streamlit app
 ├── docs/                # architecture, roadmap, internal notes
 ├── notebooks/           # experiments only (no core logic)
 ├── tests/
@@ -103,7 +94,7 @@ garmin-buddy/
 - **Ingestion:** Garmin Connect API client, FIT file parsing (e.g., `fitparse`)
 - **UI:** Streamlit
 - **LLM providers:** OpenAI and/or Google (configurable)
-- **Embeddings / RAG:** FAISS or Chroma (optional, for retrieval)
+- **Embeddings / RAG:** FAISS or Chroma
 - **Packaging / runtime:** Docker
 - **CI/CD:** GitHub Actions (planned)
 
@@ -124,7 +115,7 @@ GARMIN_PASSWORD=
 DB_CONNECTION_STRING=
 OPENAI_API_KEY=
 GOOGLE_API_KEY=
-FIT_DIR_PATH= 
+FIT_DIR_PATH=
 ```
 
 > The app fails fast if required variables are missing.
@@ -136,20 +127,16 @@ FIT_DIR_PATH=
 pip install -r requirements.txt
 ```
 
-> (or poetry install if using Poetry)
-
 ### 2) Run the Streamlit UI
 ```bash
 streamlit run app/ui/app.py
 ```
 
-### 2) Sync activities (example)
+### 3) Sync activities 
 ```bash
 python -m app.services.sync_service
 ```
 
-> Actual command names may vary depending on your current module naming.  
-> Keep scripts in `app/ingestion/` and expose a single entrypoint per action.
 
 ## AI usage notes
 
@@ -178,11 +165,6 @@ Short version:
 
 - Screenshots: add to `/docs/images/` and link here
 - Demo video: add link once recorded
-
-## Disclaimer
-
-This project is a personal training assistant and portfolio project.  
-It is not a medical tool, and nothing here should be treated as professional medical guidance.
 
 ## License
 ```text

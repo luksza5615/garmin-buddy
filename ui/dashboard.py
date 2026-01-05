@@ -1,18 +1,19 @@
+from datetime import datetime
 import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
 import logging 
 from app.ai.llm_google_service import generate_response, build_prompt
-from app.services.weekly_analysis_service import analyze_training_period, get_training_summary
-from app.services.sync_service import SyncService
-from app.services.db_service import ActivityRepository
+from app.analysis.weekly_analysis_service import analyze_training_period, get_training_summary
+from app.orchestration.sync_service import SyncService
+from app.database.db_service import ActivityRepository
 from app.config import Config, ConfigError
 from app.database.db_connector import Database
-from app.services.activity_mapper import ActivityMapper
+from app.ingestion.activity_mapper import ActivityMapper
 from app.database.db_connector import Database
-from app.services.fit_filestore import FitFileStore
-from app.services.fit_parser import FitParser
-from app.services.garmin_client import GarminClient
+from app.ingestion.fit_filestore import FitFileStore
+from app.ingestion.fit_parser import FitParser
+from app.ingestion.garmin_client import GarminClient
 
 st.set_page_config(page_title='Garmin Buddy', layout='wide')
 
@@ -25,17 +26,14 @@ def setup_logging():
 setup_logging()
 logger = logging.getLogger(__name__)
 
-
-
 try:
     configuration = Config.from_env()
     database = Database.create_db(configuration)
-    activity_repository = ActivityRepository()
     garmin_client = GarminClient(configuration.garmin_email, configuration.garmin_password)
     filestore = FitFileStore(configuration)
     fit_parser = FitParser()
     activity_mapper = ActivityMapper()
-    activity_repository = ActivityRepository()
+    activity_repository = ActivityRepository(database)
     sync_service = SyncService(configuration, database, garmin_client, filestore, fit_parser, activity_mapper, activity_repository)
 except ConfigError as e:
     logger.error("%s", e)
@@ -44,10 +42,11 @@ except ConfigError as e:
     st.stop()
 
 if st.button("Refresh database"):
+    start_date = datetime(2025, 12, 20).date()
     with st.spinner("Fetching last activities..."):
-        sync_service.sync_activities()
+        sync_service.sync_activities(start_date)
 
-activities_df = activity_repository.get_activities(database).sort_values(
+activities_df = activity_repository.get_activities().sort_values(
     by="activity_start_time", ascending=False)
 
 

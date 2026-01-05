@@ -3,7 +3,7 @@ import os
 import zipfile
 
 from app.config import Config
-from app.services.garmin_client import GarminClient
+from app.ingestion.garmin_client import GarminClient
 
 logger = logging.getLogger(__name__)
 
@@ -53,29 +53,4 @@ class FitFileStore:
             logger.exception("Failed to extract or remove ZIP %s", fit_path_zip)
 
 
-if __name__ == '__main__':
-    
-    #path = "C:\\Users\\LSzata\\OneDrive - DXC Production\\Projects\\garmin\\fit-files\\2024-01-26_hiit_13677470616.fit"
-    path = "C:\\Users\\LSzata\\OneDrive - DXC Production\\Projects\\garmin\\fit-files\\2025-12-28_running_21372303473.fit"
-    fit_dir_path = "C:\\Users\\LSzata\\OneDrive - DXC Production\\Projects\\garmin\\fit-files"
-    from app.services.db_service import ActivityRepository
-    from app.services.activity_mapper import ActivityMapper
-    from app.database.db_connector import Database
-    from app.config import Config
-    from app.services.fit_parser import FitParser
-    configuration = Config.from_env()
-    parser = FitParser()
-    parsed = parser.parse_fit_file(path)
-    # print(parsed)
-    fitservice = FitFileStore(configuration)
-    activity_mapper = ActivityMapper()
-    activity_to_save = activity_mapper.from_parsed_fit(123456, parsed)
-    print(activity_to_save)
-    # repository = ActivityRepository()
-    # from app.services.sync_service import SyncService
-    # sync_service = SyncService()
-    # database = Database.create_db(configuration)
-    # sync_service.sync_activities(configuration, database)
-    # id = fitservice.extract_id_from_fit_file("2023-11-24_multi_sport_12859996495.fit")
-    # files_ids = fitservice.list_existing_fit_files_ids(fit_dir_path)
-    # print(files_ids)
+

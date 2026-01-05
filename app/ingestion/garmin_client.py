@@ -11,6 +11,10 @@ class GarminClient:
         self.password = password
         self._client: Garmin
     
+    def test_zones(self):
+        timezones = self._client.get_activity_hr_in_timezones(21401639665)
+        print(timezones)
+
     def login_to_garmin(self):
         try:
             client = Garmin(self.email, self.password)
@@ -21,7 +25,7 @@ class GarminClient:
             logger.exception("Failed to connect.")
             raise
 
-    def get_garmin_activities_full_history(self, start_date=None, end_date=None, window_days=90):
+    def get_garmin_activities_history(self, start_date=None, end_date=None, window_days=90):
         """
         Fetch activities across full history by paging through date windows.
         If start_date is None, default to a far past date.

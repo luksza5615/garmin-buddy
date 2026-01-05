@@ -1,6 +1,6 @@
 import pytest
 import os
-from app.services.fit_parser import parse_fit_file
+from app.ingestion.fit_parser import parse_fit_file
 
 
 @pytest.fixture

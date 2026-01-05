@@ -1,13 +1,14 @@
+from datetime import date
 import logging
 import os
 
-from app.services.db_service import ActivityRepository
-from app.services.activity_mapper import ActivityMapper
+from app.database.db_service import ActivityRepository
+from app.ingestion.activity_mapper import ActivityMapper
 from app.config import Config
 from app.database.db_connector import Database
-from app.services.fit_filestore import FitFileStore
-from app.services.fit_parser import FitParser
-from app.services.garmin_client import GarminClient
+from app.ingestion.fit_filestore import FitFileStore
+from app.ingestion.fit_parser import FitParser
+from app.ingestion.garmin_client import GarminClient
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +31,10 @@ class SyncService:
         self.activity_mapper = activity_mapper
         self.activity_repository = activity_repository
 
-    def sync_activities(self) -> None:
+    def sync_activities(self, start_date: date) -> None:
         self.garmin_client.login_to_garmin()
-        garmin_activities = self.garmin_client.get_garmin_activities_full_history()
-        db_ids_set = self.activity_repository.get_db_activity_ids_set(self.database)
+        garmin_activities = self.garmin_client.get_garmin_activities_history(start_date)
+        db_ids_set = self.activity_repository.get_db_activity_ids_set()
         existing_files_set = self.fit_filestore.list_existing_fit_files_ids_set()
 
         persisted_activities = []
@@ -72,4 +73,4 @@ class SyncService:
     def _parse_and_persist(self, fit_filepath: str, activity_id: int) -> None:
         parsed_activity = self.fit_parser.parse_fit_file(fit_filepath)
         activity_model = self.activity_mapper.from_parsed_fit(activity_id, parsed_activity)
-        self.activity_repository.save_activity_to_db(self.database, activity_model)
+        self.activity_repository.save_activity_to_db(activity_model)
