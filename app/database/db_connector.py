@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type, before, after
 from sqlalchemy.exc import OperationalError
 from contextlib import contextmanager
-from app.config import Config
+from app.settings.config import Config
 
 logger = logging.getLogger(__name__)
 

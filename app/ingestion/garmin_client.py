@@ -11,10 +11,6 @@ class GarminClient:
         self.password = password
         self._client: Garmin
     
-    def test_zones(self):
-        timezones = self._client.get_activity_hr_in_timezones(21401639665)
-        print(timezones)
-
     def login_to_garmin(self):
         try:
             client = Garmin(self.email, self.password)

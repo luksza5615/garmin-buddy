@@ -29,10 +29,18 @@ Garmin-Buddy turns raw activity logs into:
 
 **Components**
 - **Ingestion**: Garmin API / FIT parsing
-- **Processing**: metrics, transformations, aggregation
-- **Database**: SQLAlchemy models + migrations
-- **AI Engine**: prompts + structured output + RAG over training history
+- **Analysis**: metrics, transformations, aggregation
+- **Database**: schema + persistence + migrations
+- **AI Engine**: prompts + structured output + RAG over training history 
 - **UI**: Streamlit dashboard
+
+**Deployment**
+- Azure Container Apps (app runtime)
+- Azure SQL Database (storage)
+- Azure Key Vault (secrets) *(planned)*
+- GitHub Actions (CI/CD) *(planned)*
+
+> Note: The Azure deployment is for personal use only due to personal data & scaling-to-zero 
 
 ![Architecture](docs/architecture.drawio.svg)
 
@@ -74,16 +82,18 @@ Garmin-Buddy turns raw activity logs into:
 ```text
 garmin-buddy/
 ├── app/
-│   ├── services/       # Garmin API, FIT loading/parsing, transformations
+│   ├── ingestion/       # Garmin API, FIT loading/parsing, transformations
 │   ├── ai/              # prompts, LLM clients, RAG, evaluations
-│   ├── database/              # SQLAlchemy models, session, migrations
+│   ├── database/        # connection, schema, db operations
+│   ├── analysis/        # metrics, aggregations
+│   ├── domain/          # models
+│   ├── orchestration/   # workflow orchestration
+│   ├── utils/           # helper functions
 ├── ui/                  # Streamlit app
-├── docs/                # architecture, roadmap, internal notes
-├── notebooks/           # experiments only (no core logic)
+├── docs/                # architecture, internal notes
 ├── tests/
 ├── .env.example
 ├── README.md
-└── pyproject.toml
 ```
 
 ## Tech stack

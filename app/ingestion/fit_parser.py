@@ -36,7 +36,7 @@ class FitParser:
         records = fitfile.get_messages(message_type)
 
         if not records:
-            print("No records in message type %s", message_type)
+            print(f"No records in message type {message_type}")
 
         for record in records:
             for record_field in record:

@@ -4,7 +4,7 @@ import os
 
 from app.database.db_service import ActivityRepository
 from app.ingestion.activity_mapper import ActivityMapper
-from app.config import Config
+from app.settings.config import Config
 from app.database.db_connector import Database
 from app.ingestion.fit_filestore import FitFileStore
 from app.ingestion.fit_parser import FitParser
@@ -31,7 +31,7 @@ class SyncService:
         self.activity_mapper = activity_mapper
         self.activity_repository = activity_repository
 
-    def sync_activities(self, start_date: date) -> None:
+    def sync_activities(self, start_date: date = None) -> None:
         self.garmin_client.login_to_garmin()
         garmin_activities = self.garmin_client.get_garmin_activities_history(start_date)
         db_ids_set = self.activity_repository.get_db_activity_ids_set()
@@ -40,6 +40,7 @@ class SyncService:
         persisted_activities = []
 
         for garmin_activity in garmin_activities:
+            logging.debug("Test %s", garmin_activity)
             try:
                 garmin_activity_id, garmin_activity_type, garmin_activity_date = self.garmin_client.get_activity_signature(garmin_activity)
                 

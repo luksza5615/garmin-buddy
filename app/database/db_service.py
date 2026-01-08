@@ -12,7 +12,7 @@ class ActivityRepository:
         self.database = database
 
     def check_if_activity_exists_in_db(self, activity_id):
-        activities_rows_list = self.get_activity_ids(self.database)
+        activities_rows_list = self.get_activity_ids()
         activities_ids_list = [row.activity_id for row in activities_rows_list]
 
         return activity_id in activities_ids_list
@@ -50,7 +50,8 @@ class ActivityRepository:
         with self.database.get_db_connection() as conn:
             result = conn.execute(query, {'days': days})
             activities = pd.DataFrame(result.fetchall(), columns=result.keys())
-            print(f"Found {len(activities)} activities in the last {days} days")
+            number_of_activities = len(activities)
+            logger.info("Found %d activities in the last %d days", number_of_activities, days)
 
         return activities
 
@@ -68,7 +69,7 @@ class ActivityRepository:
     
     def save_activity_to_db(self, activity):
 
-        if self.check_if_activity_exists_in_db(self.database, activity.activity_id) is False:
+        if self.check_if_activity_exists_in_db(activity.activity_id) is False:
             try:
                 query = text("""INSERT INTO activity (
                             activity_id, activity_date, activity_start_time, sport, subsport, distance_in_km, elapsed_duration, 

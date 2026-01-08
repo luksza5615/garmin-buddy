@@ -2,7 +2,6 @@ import os
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +39,6 @@ class Config:
 
     @classmethod
     def from_env(cls) -> "Config":
-        
-        load_dotenv(override=True)
-
         fit_path = os.getenv("FIT_DIR_PATH")
         garmin_email = os.getenv("GARMIN_EMAIL")
         garmin_password = os.getenv("GARMIN_PASSWORD")
@@ -60,3 +56,4 @@ class Config:
             garmin_password=garmin_password,
             db_connection_string=db_connection_string
         )
+

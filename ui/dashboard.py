@@ -7,26 +7,23 @@ from app.ai.llm_google_service import generate_response, build_prompt
 from app.analysis.weekly_analysis_service import analyze_training_period, get_training_summary
 from app.orchestration.sync_service import SyncService
 from app.database.db_service import ActivityRepository
-from app.config import Config, ConfigError
+from app.settings.config import Config, ConfigError
+from app.settings.logging_config import setup_logging
 from app.database.db_connector import Database
 from app.ingestion.activity_mapper import ActivityMapper
 from app.database.db_connector import Database
 from app.ingestion.fit_filestore import FitFileStore
 from app.ingestion.fit_parser import FitParser
 from app.ingestion.garmin_client import GarminClient
+from dotenv import load_dotenv
 
 st.set_page_config(page_title='Garmin Buddy', layout='wide')
 
-
-def setup_logging():
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s | %(levelname)s | %(name)s | %(message)s"
-    )
-setup_logging()
 logger = logging.getLogger(__name__)
 
 try:
+    load_dotenv(override=True)
+    setup_logging()
     configuration = Config.from_env()
     database = Database.create_db(configuration)
     garmin_client = GarminClient(configuration.garmin_email, configuration.garmin_password)
@@ -42,7 +39,7 @@ except ConfigError as e:
     st.stop()
 
 if st.button("Refresh database"):
-    start_date = datetime(2025, 12, 20).date()
+    start_date = datetime(2025, 12, 30).date()
     with st.spinner("Fetching last activities..."):
         sync_service.sync_activities(start_date)
 

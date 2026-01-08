@@ -12,6 +12,9 @@ __pycache__/
 # DB
 garmin_data.db
 
+#logs
+logs/
+
 # temp
 fit-files/
 zzzignored/

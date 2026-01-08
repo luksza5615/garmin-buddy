@@ -3,10 +3,10 @@ from typing import Any
 
 from app.domain.activity import Activity
 from app.utils.converter import (
-    convert_m_to_km, 
-    calculate_start_of_week, 
-    convert_seconds_to_time, 
-    convert_speed_to_pace
+    calculate_start_of_week,
+    convert_m_to_km,
+    convert_seconds_to_time,
+    convert_speed_to_pace,
 )
 
 logger = logging.getLogger(__name__)
