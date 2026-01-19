@@ -1,9 +1,12 @@
+from dataclasses import asdict
+from datetime import date
 import logging
+
 import pandas as pd
 import pyodbc
-from app.database.db_connector import Database
-from dataclasses import asdict
 from sqlalchemy import text
+
+from app.database.db_connector import Database
 
 logger = logging.getLogger(__name__)
 
@@ -11,79 +14,42 @@ class ActivityRepository:
     def __init__(self, database: Database) -> None:
         self.database = database
 
-    def check_if_activity_exists_in_db(self, activity_id):
-        activities_rows_list = self.get_activity_ids()
-        activities_ids_list = [row.activity_id for row in activities_rows_list]
+    def get_activities(self, start_date: date | None = None, end_date: date | None = None) -> pd.DataFrame:   
+        if start_date is not None and end_date is not None and start_date > end_date:
+            raise ValueError(
+                f"Start date cannot be later than end date for activities range. Start date set: {start_date}, end date: {end_date}"
+            )
+        query_params: dict[str, date] = {}
+        query = "SELECT * FROM [dbo].[activity] WHERE 1=1"
 
-        return activity_id in activities_ids_list
+        if start_date is not None:
+            query += " AND activity_date >= :start_date"
+            query_params["start_date"] = start_date
 
-    def get_activities(self):
-        query = "SELECT * FROM activity ORDER BY activity_start_time DESC"
-
+        if end_date is not None:
+            query += " AND activity_date <= :end_date"
+            query_params["end_date"] = end_date
+      
         with self.database.get_db_connection() as conn:
-            activities = pd.read_sql_query(query, conn)
-
-        return activities
-
-    def get_activity_ids(self):
-        query = "SELECT activity_id FROM dbo.activity"
-
-        with self.database.get_db_connection() as conn:
-            activity_ids = conn.execute(
-                text(query)
-            ).fetchall()
-
-        return activity_ids
-
-    def get_db_activity_ids_set(self):
-        rows = self.get_activity_ids()
-        return set([row.activity_id for row in rows])
+            activities = pd.read_sql_query(text(query), conn, params=query_params if query_params else None)
         
-    def get_activities_last_x_days(self, days: int = 7):
-
-        query = text("""
-            SELECT * FROM activity 
-            WHERE activity_start_time >= DATEADD(day, -:days, GETDATE())
-            ORDER BY activity_start_time DESC
-        """)
-
-        with self.database.get_db_connection() as conn:
-            result = conn.execute(query, {'days': days})
-            activities = pd.DataFrame(result.fetchall(), columns=result.keys())
-            number_of_activities = len(activities)
-            logger.info("Found %d activities in the last %d days", number_of_activities, days)
+        logger.info("Fetched %d activities", len(activities))
 
         return activities
-
-    def get_aggregated_data(self):
-        query = """
-            SELECT start_of_week, sum(distance_in_km) as suma
-            FROM [dbo].[activity]
-            GROUP BY start_of_week
-            ORDER BY start_of_week desc
-        """
-        with self.database.get_db_connection() as conn:
-            result = conn.execute(text(query))
-            df = pd.DataFrame(result.fetchall(), columns=result.keys())
-            return df
-    
-    def save_activity_to_db(self, activity):
-
-        if self.check_if_activity_exists_in_db(activity.activity_id) is False:
+  
+    def persist_activity(self, activity):
+        if self._check_if_activity_exists_in_db(activity.activity_id) is False:
             try:
                 query = text("""INSERT INTO activity (
                             activity_id, activity_date, activity_start_time, sport, subsport, distance_in_km, elapsed_duration, 
                             grade_adjusted_avg_pace_min_per_km, avg_heart_rate, calories_burnt, aerobic_training_effect_0_to_5, 
                             anaerobic_training_effect_0_to_5, total_ascent_in_meters, total_descent_in_meters, start_of_week, running_efficiency_index)
-                        VALUES (
+                            VALUES (
                             :activity_id, :activity_date, :activity_start_time, :sport, :subsport, :distance_in_km, :elapsed_duration,
                             :grade_adjusted_avg_pace_min_per_km, :avg_heart_rate, :calories_burnt,
                             :aerobic_training_effect_0_to_5, :anaerobic_training_effect_0_to_5,
                             :total_ascent_in_meters, :total_descent_in_meters, :start_of_week, :running_efficiency_index)
                         """)
-
-                # with database.engine.begin() as conn:
-                #     conn.execute(query, activity_data_to_save_in_db)
 
                 params = asdict(activity)
 
@@ -98,3 +64,22 @@ class ActivityRepository:
         else:
             logger.info("Activity %s already exists in the database",
                 (activity.activity_start_time))
+
+    def get_activity_ids_set(self):
+        rows = self._get_activity_ids()
+
+        return set([row.activity_id for row in rows])   
+
+    def _check_if_activity_exists_in_db(self, activity_id):
+        activities_rows_list = self._get_activity_ids()
+        activities_ids_list = [row.activity_id for row in activities_rows_list]
+
+        return activity_id in activities_ids_list
+    
+    def _get_activity_ids(self):
+        query = "SELECT activity_id FROM dbo.activity"
+
+        with self.database.get_db_connection() as conn:
+            activity_ids = conn.execute(text(query)).fetchall()
+
+        return activity_ids

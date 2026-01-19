@@ -29,7 +29,3 @@ def create_activity_table():
         connection = session.connection()
         connection.execute(text(query))
         connection.commit()
-
-
-if __name__ == '__main__':
-    create_activity_table()

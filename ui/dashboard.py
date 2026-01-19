@@ -1,289 +1,218 @@
-from datetime import datetime
-import streamlit as st
-import matplotlib.pyplot as plt
+from __future__ import annotations
+from dataclasses import dataclass
+from datetime import date, datetime, timedelta
+import math
+
+from dotenv import load_dotenv
 import pandas as pd
-import logging 
-from app.ai.llm_google_service import generate_response, build_prompt
-from app.analysis.weekly_analysis_service import analyze_training_period, get_training_summary
-from app.orchestration.sync_service import SyncService
+import streamlit as st
+
+from app.ai.llm_analysis_service import LLMService
+from app.analysis.analysis_service import AnalysisService
+from app.database.db_connector import Database
 from app.database.db_service import ActivityRepository
-from app.settings.config import Config, ConfigError
-from app.settings.logging_config import setup_logging
-from app.database.db_connector import Database
 from app.ingestion.activity_mapper import ActivityMapper
-from app.database.db_connector import Database
 from app.ingestion.fit_filestore import FitFileStore
 from app.ingestion.fit_parser import FitParser
 from app.ingestion.garmin_client import GarminClient
-from dotenv import load_dotenv
+from app.orchestration.sync_service import SyncService
+from app.settings.config import Config, ConfigError
+from app.settings.logging_config import setup_logging
+from ui.charts import weekly_trend_chart
+from ui.label_mapping import SPORT_LABELS, SUBSPORT_LABELS
 
-st.set_page_config(page_title='Garmin Buddy', layout='wide')
+@dataclass(frozen=True)
+class Services:
+    repo: ActivityRepository
+    sync: SyncService
+    analysis: AnalysisService
+    llm: LLMService
 
-logger = logging.getLogger(__name__)
-
-try:
+# @st.cache_resource(show_spinner=False)
+def init_services() -> Services:
     load_dotenv(override=True)
     setup_logging()
-    configuration = Config.from_env()
-    database = Database.create_db(configuration)
-    garmin_client = GarminClient(configuration.garmin_email, configuration.garmin_password)
-    filestore = FitFileStore(configuration)
-    fit_parser = FitParser()
-    activity_mapper = ActivityMapper()
-    activity_repository = ActivityRepository(database)
-    sync_service = SyncService(configuration, database, garmin_client, filestore, fit_parser, activity_mapper, activity_repository)
+
+    cfg = Config.from_env()
+    db = Database.create_db(cfg)
+    garmin = GarminClient(cfg.garmin_email, cfg.garmin_password)
+    filestore = FitFileStore(cfg)
+    parser = FitParser()
+    mapper = ActivityMapper()
+    repo = ActivityRepository(db)
+    sync = SyncService(cfg, db, garmin, filestore, parser, mapper, repo)
+    analysis = AnalysisService(repo)
+    llm = LLMService(cfg.llm_api_key)
+
+    return Services(repo=repo, sync=sync, analysis=analysis, llm=llm)
+
+# @st.cache_data(ttl=60, show_spinner=False)
+def load_activities(repo: ActivityRepository, start: date, end: date) -> pd.DataFrame:
+    df = repo.get_activities(start, end)
+    if df.empty:
+        return df
+
+    return df.sort_values(by="activity_start_time", ascending=False)
+
+
+# ----------APP---------
+st.set_page_config(page_title="Garmin Buddy", layout="wide")
+
+try:
+    services = init_services()
 except ConfigError as e:
-    logger.error("%s", e)
     st.error(str(e))
-    st.info("Set the missing env vars (or .env) and restart the app.")
+    st.info("Set missing env vars (or .env) and restart the app.")
     st.stop()
 
-if st.button("Refresh database"):
-    start_date = datetime(2025, 12, 30).date()
-    with st.spinner("Fetching last activities..."):
-        sync_service.sync_activities(start_date)
-
-activities_df = activity_repository.get_activities().sort_values(
-    by="activity_start_time", ascending=False)
+# st.title("Garmin Buddy")
 
 
-st.subheader("Activities")
-st.dataframe(activities_df)
+# --- Sidebar controls
+with st.sidebar:
+    st.header("📅 Activities date range")
 
-running_activities = activities_df[activities_df['sport'] == 'running']
-
-
-st.subheader("Running weekly measures")
-weekly_running_activities = running_activities.groupby("start_of_week").agg(
-    {
-        "distance_in_km": "sum",
-        "calories_burnt": "sum",
-        "avg_heart_rate": "mean",
-        "total_ascent_in_meters": "sum",
-        "running_efficiency_index": "mean",
-        "aerobic_training_effect_0_to_5": "mean",
-        "anaerobic_training_effect_0_to_5": "mean"
-
-    }
-).reset_index().sort_values(
-    by="start_of_week", ascending=False)
-
-# Ensure missing weeks are shown as gaps (zero values)
-# Convert to datetime for reliable weekly indexing
-weekly_running_activities["start_of_week"] = pd.to_datetime(weekly_running_activities["start_of_week"]) 
-
-if not weekly_running_activities.empty:
-    # Build a complete weekly index from min to max, aligned to the same weekday as existing data
-    first_week = weekly_running_activities["start_of_week"].min()
-    last_week = weekly_running_activities["start_of_week"].max()
-    # Assuming start_of_week is a Monday (consistent with calculation in garmin_service)
-    full_weeks_index = pd.date_range(start=first_week, end=last_week, freq="W-MON")
-
-    reindexed = weekly_running_activities.set_index("start_of_week").reindex(full_weeks_index)
-
-    # Fill missing numeric columns with zeros to visualize gaps as empty bars
-    numeric_cols = [
-        "distance_in_km",
-        "calories_burnt",
-        "avg_heart_rate",
-        "total_ascent_in_meters",
-        "running_efficiency_index",
-        "aerobic_training_effect_0_to_5",
-        "anaerobic_training_effect_0_to_5",
-    ]
-    for col in numeric_cols:
-        if col in reindexed.columns:
-            reindexed[col] = reindexed[col].fillna(0)
-
-    weekly_running_activities = reindexed.reset_index().rename(columns={"index": "start_of_week"})
-
-st.dataframe(weekly_running_activities)
-
-# Pagination setup
-page_size = 20
-total_pages = len(weekly_running_activities) // page_size + \
-    (1 if len(weekly_running_activities) % page_size else 0)
-
-# Use session state to persist current page and control via buttons below the chart
-if "weekly_page" not in st.session_state:
-    st.session_state["weekly_page"] = 1
-
-page = max(1, min(st.session_state["weekly_page"], max(total_pages, 1)))
-
-start_idx = (page - 1) * page_size
-end_idx = start_idx + page_size
-df_page = weekly_running_activities.sort_values(
-    by="start_of_week", ascending=False
-).iloc[start_idx:end_idx].reset_index(drop=True)
-# Within the page, show oldest on the left and newest on the right
-df_page = df_page.sort_values(by="start_of_week", ascending=True).reset_index(drop=True)
-
-fig, ax = plt.subplots(figsize=(8, 4))
-x = range(len(df_page))  # Numeric x positions for both axes
-bar_width = 0.4
-
-bars = ax.bar([i - bar_width/2 for i in x], df_page["distance_in_km"],
-              width=bar_width, label="Distance (km)", color='tab:blue')
-
-ax2 = ax.twinx()
-
-bars2 = ax2.bar([i + bar_width/2 for i in x], df_page["calories_burnt"],
-                width=bar_width, label="Calories Burnt", color='tab:orange')
-
-
-ax.set_xlabel("Start of week", fontsize=5)
-ax.set_ylabel("Distance (km)", fontsize=5, color='tab:blue')
-ax2.set_ylabel("Calories Burnt", fontsize=5, color='tab:orange')
-
-
-ax.set_xticks(x)
-# Format x-axis as YYYY-MM-DD without time
-if isinstance(df_page["start_of_week"].iloc[0], pd.Timestamp):
-    x_labels = df_page["start_of_week"].dt.strftime('%Y-%m-%d').tolist()
-else:
-    # fallback if dtype is object/str
-    x_labels = pd.to_datetime(df_page["start_of_week"]).dt.strftime('%Y-%m-%d').tolist()
-ax.set_xticklabels(x_labels, fontsize=3, rotation=45, ha='right')
-
-
-ax.tick_params(axis='both', labelsize=3)
-ax2.tick_params(axis='y', labelsize=3)
-
-
-# Hide labels for zero-height bars by using empty strings
-distance_labels = [f"{v:.2f}" if float(v) > 0 else "" for v in df_page["distance_in_km"]]
-calories_labels = [f"{int(v)}" if float(v) > 0 else "" for v in df_page["calories_burnt"]]
-ax.bar_label(bars, labels=distance_labels, padding=2, fontsize=3)
-ax2.bar_label(bars2, labels=calories_labels, padding=2, fontsize=3)
-
-st.pyplot(fig)
-
-# Pagination controls under the chart (compact and centered)
-pad_left, prev_col, page_col, next_col, pad_right = st.columns([4, 1, 1, 1, 4])
-
-with prev_col:
-    if st.button("< Previous", disabled=page <= 1):
-        st.session_state["weekly_page"] = max(1, page - 1)
-        st.rerun()
-
-with page_col:
-    st.markdown(
-        f"<div style='text-align:center; white-space:nowrap;'>Page {page} / {total_pages}</div>",
-        unsafe_allow_html=True,
+    default_end = date.today()
+    default_start = default_end - timedelta(days=30)
+    start, end = st.date_input(
+        label="",
+        value=(default_start, default_end),
+        max_value=default_end,
+        label_visibility="collapsed",
+        format="DD/MM/YYYY"
     )
 
-with next_col:
-    if st.button("Next >", disabled=page >= total_pages):
-        st.session_state["weekly_page"] = min(total_pages, page + 1)
-        st.rerun()
+    st.divider()
 
-# RUNNING EFFICIENCY INDEX
-fig2, ax = plt.subplots(figsize=(8, 4))
-plt.plot(df_page["start_of_week"],
-         df_page["running_efficiency_index"], marker='o')
+    st.header("🔄 Refresh activities    ")
+    if st.button("Refresh", width='stretch'):
+        with st.spinner("Syncing activities..."):
+            sync_start = start  
+            services.sync.sync_activities(sync_start)
+        st.cache_data.clear()
+        st.toast("Actitivies refreshed", icon="✅")
 
-ax.tick_params(axis='both', labelsize=3)
-ax.set_xticks(df_page['start_of_week'])
-ax.set_xticklabels(df_page["start_of_week"], rotation=45, fontsize=5)
+# Load activities (cached)
+df = load_activities(services.repo, start, end)
 
-ax.set_xlabel("Start of week", fontsize=5)
-ax.set_ylabel("Average running efficiency index", fontsize=3)
-st.pyplot(fig2)
+metrics = services.analysis.calculate_kpis(df)
+col1, col2, col3, col4= st.columns(4)
+col1.metric("Activities 🏋️", f"{int(metrics.get('activities_count', 0)):,.0f}")
+col2.metric("Distance ➡️", f"{metrics.get('distance_km', 0):,.2f} km")
+#TODO col2.metric("Duration", f"{metrics.get('duration_h', 0):.1f} h")
+col3.metric("Ascent ↗️", f"{metrics.get('ascent_m', 0):,.0f} m")
+col4.metric("Avg HR ❤️", f"{metrics.get('avg_hr', 0):.0f} bpm")
 
+tabs = st.tabs(["Activities", "Weekly", "AI Analysis"])
 
-# Weekly Analysis Section
-st.subheader("📊 Training Period Analysis")
+with tabs[0]:
+    st.subheader("Activities")
+    if df.empty:
+        st.info("No activities to show.")
+    else:
+        cols = [
+            "activity_start_time",               
+            "sport",                             
+            "subsport",                          
+            "distance_in_km",                   
+            "elapsed_duration" ,               
+            "grade_adjusted_avg_pace_min_per_km",
+            "avg_heart_rate",                     
+            "total_ascent_in_meters",             
+            "calories_burnt",                     
+            "aerobic_training_effect_0_to_5",    
+            "anaerobic_training_effect_0_to_5",  
+            "running_efficiency_index",   
+        ]
 
-# Create columns for day selection and analysis
-col1, col2, col3 = st.columns([1, 1, 2])
+        display_df = df[cols].copy()
+        display_df["sport"] = display_df["sport"].map(SPORT_LABELS)
+        display_df["subsport"] = display_df["subsport"].map(SUBSPORT_LABELS)
 
-with col1:
-    days_option = st.selectbox(
-        "Analysis Period",
-        options=[7, 10, 14, 21, 30],
-        index=0,
-        help="Select number of days to analyze"
-    )
+        st.dataframe(
+            display_df,
+            hide_index=True,
+            width='stretch',
+            column_config={
+                "activity_start_time": st.column_config.DatetimeColumn("Start time"),
+                "sport": st.column_config.TextColumn("Sport"),
+                "subsport": st.column_config.TextColumn("Type"),
+                "distance_in_km": st.column_config.NumberColumn("Distance (km)", format="%.2f"),
+                "elapsed_duration": st.column_config.TextColumn("Duration"),
+                "grade_adjusted_avg_pace_min_per_km": st.column_config.TextColumn("Avg pace (min/km)"),
+                "avg_heart_rate": st.column_config.NumberColumn("Avg HR", format="%.0f"),
+                "total_ascent_in_meters": st.column_config.NumberColumn("Ascent (m)", format="%.0f"),
+                "calories_burnt": st.column_config.NumberColumn("Calories", format="%.0f"),
+                "aerobic_training_effect_0_to_5": st.column_config.NumberColumn("Aerobic TE (0-5)", format="%.1f"),
+                "anaerobic_training_effect_0_to_5": st.column_config.NumberColumn("Anaerobic TE (0-5)", format="%.1f"),
+                "running_efficiency_index": st.column_config.NumberColumn("Running Efficiency Index", format="%.2f"),
+            },
+        )
 
-with col2:
-    if st.button("📈 Analyze Training Period", type="primary"):
-        with st.spinner(f"Analyzing last {days_option} days..."):
-            try:
-                # Get quick summary first
-                summary = get_training_summary(days_option)
-                
-                # Display summary metrics
-                st.success(f"Found {summary['activities_count']} activities in the last {days_option} days")
-                
-                # Show metrics in columns
-                metric_col1, metric_col2, metric_col3 = st.columns(3)
-                
-                with metric_col1:
-                    st.metric("Total Distance", f"{summary['metrics']['total_distance_km']:.1f} km")
-                    st.metric("Total Activities", summary['metrics']['total_activities'])
-                
-                with metric_col2:
-                    st.metric("Avg Heart Rate", f"{summary['metrics']['avg_heart_rate']:.0f} bpm")
-                    st.metric("Total Calories", f"{summary['metrics']['total_calories']:,}")
-                
-                with metric_col3:
-                    st.metric("Total Duration", f"{summary['metrics']['total_duration_hours']:.1f} hrs")
-                    st.metric("Elevation Gain", f"{summary['metrics']['total_ascent_m']:,} m")
-                
-                # Sports breakdown
-                if summary['metrics']['sports_breakdown']:
-                    st.write("**Sports Breakdown:**")
-                    for sport, count in summary['metrics']['sports_breakdown'].items():
-                        st.write(f"- {sport}: {count} activities")
-                
-                # Get detailed analysis
-                st.write("---")
-                st.write("**🤖 AI Analysis:**")
-                analysis = analyze_training_period(days_option)
-                st.write(analysis)
-                
-            except Exception as e:
-                st.error(f"Error during analysis: {str(e)}")
+with tabs[1]:
+    st.subheader("Weekly measures for running")
+    w = services.analysis.weekly_running_stats(df)
 
-with col3:
-    st.info(f"""
-    **Analysis Period: {days_option} days**
-    
-    This analysis will examine your training data from the last {days_option} days, including:
-    - Training load and volume
-    - Performance trends
-    - Recovery patterns
-    - Sport-specific insights
-    - Personalized recommendations
-    """)
+    if w.empty:
+        st.info("No running activities in this range.")
+    else:
+        METRICS = {
+            "Distance": {"col": "distance_km", "type": "bar"},
+            "Calories": {"col": "calories", "type": "bar"},
+            "Average HR": {"col": "avg_hr", "type": "line"},
+            "Running efficiency index": {"col": "rei", "type": "line"},
+            "Ascent": {"col": "ascent_m", "type": "bar"},
+            "Average aerobic TE": {"col": "te_aer", "type": "line"},
+            "Average anaerobic TE": {"col": "te_ana", "type": "line"},
+        }
 
-# Quick Summary Section
-if st.button("📋 Quick Summary"):
-    with st.spinner("Generating quick summary..."):
-        try:
-            summary = get_training_summary(days_option)
-            
-            st.subheader(f"Quick Summary - Last {days_option} Days")
-            
-            # Create a more detailed metrics display
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.write("**Training Volume:**")
-                st.write(f"- Total Distance: {summary['metrics']['total_distance_km']:.1f} km")
-                st.write(f"- Total Duration: {summary['metrics']['total_duration_hours']:.1f} hours")
-                st.write(f"- Total Activities: {summary['metrics']['total_activities']}")
-                
-            with col2:
-                st.write("**Performance Metrics:**")
-                st.write(f"- Average Heart Rate: {summary['metrics']['avg_heart_rate']:.0f} bpm")
-                st.write(f"- Total Calories: {summary['metrics']['total_calories']:,}")
-                st.write(f"- Elevation Gain: {summary['metrics']['total_ascent_m']:,} m")
-            
-            # Date range
-            st.write(f"**Period:** {summary['date_range']['start']} to {summary['date_range']['end']}")
-            
-        except Exception as e:
-            st.error(f"Error generating summary: {str(e)}")
+        metric_label = st.radio(
+            "Metric",
+            options=list(METRICS.keys()),
+            horizontal=True,
+            label_visibility="collapsed",
+        )
 
+        metric_cfg = METRICS[metric_label]
+        col = metric_cfg["col"]
 
+        chart = weekly_trend_chart(
+            weekly_df=w,
+            col=col,
+            title=metric_label,
+            chart_type=metric_cfg["type"],
+            bar_size=18,                 
+            bar_color="#4C78A8",         
+            line_color="#F58518",        
+        )
+        st.altair_chart(chart)
+
+        st.dataframe(
+            w, 
+            width='stretch', 
+            hide_index=True,
+            column_config={
+                    "start_of_week": st.column_config.DateColumn("Start of week"),
+                    "distance_km": st.column_config.NumberColumn("Distance (km)", format="%.2f"),
+                    "avg_hr": st.column_config.NumberColumn("Avg HR", format="%.0f"),
+                    "ascent_m": st.column_config.NumberColumn("Ascent (m)", format="%.0f"),
+                    "calories": st.column_config.NumberColumn("Calories", format="%.0f"),
+                    "te_aer": st.column_config.NumberColumn("Aerobic TE (0-5)", format="%.1f"),
+                    "te_ana": st.column_config.NumberColumn("Anaerobic TE (0-5)", format="%.1f"),
+                    "rei": st.column_config.NumberColumn("Running Efficiency Index", format="%.2f"),
+                }   
+            )
+
+with tabs[2]:
+    st.subheader("AI analysis")
+    st.caption("Generates insights for the selected date range.")
+
+    if df.empty:
+        st.info("Pick a range with activities first.")
+    else:
+        if st.button("🤖 Generate AI analysis", type="primary"):
+            with st.spinner("Analyzing..."):
+                analysis_text = services.llm.analyze_training_period(
+                    df, metrics, start, end
+                )
+            st.markdown(analysis_text)

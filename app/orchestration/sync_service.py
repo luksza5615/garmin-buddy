@@ -34,7 +34,7 @@ class SyncService:
     def sync_activities(self, start_date: date = None) -> None:
         self.garmin_client.login_to_garmin()
         garmin_activities = self.garmin_client.get_garmin_activities_history(start_date)
-        db_ids_set = self.activity_repository.get_db_activity_ids_set()
+        db_ids_set = self.activity_repository.get_activity_ids_set()
         existing_files_set = self.fit_filestore.list_existing_fit_files_ids_set()
 
         persisted_activities = []
@@ -74,4 +74,4 @@ class SyncService:
     def _parse_and_persist(self, fit_filepath: str, activity_id: int) -> None:
         parsed_activity = self.fit_parser.parse_fit_file(fit_filepath)
         activity_model = self.activity_mapper.from_parsed_fit(activity_id, parsed_activity)
-        self.activity_repository.save_activity_to_db(activity_model)
+        self.activity_repository.persist_activity(activity_model)

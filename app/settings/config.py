@@ -18,9 +18,10 @@ class Config:
     garmin_email: str
     garmin_password: str
     db_connection_string: str
+    llm_api_key: str
 
     @staticmethod
-    def validate_vars(*, fit_dir_path, garmin_email, garmin_password, db_connection_string) -> None:
+    def validate_vars(*, fit_dir_path, garmin_email, garmin_password, db_connection_string, llm_api_key) -> None:
 
         missing_vars: list[str] = []
         if not fit_dir_path:
@@ -31,6 +32,9 @@ class Config:
             missing_vars.append("GARMIN_PASSWORD")
         if not db_connection_string:
             missing_vars.append("DB_CONNECTION_STRING")
+        if not llm_api_key:
+            missing_vars.append("LLM_API_KEY")
+
 
         if missing_vars:
             raise ConfigError(missing_vars)
@@ -43,17 +47,20 @@ class Config:
         garmin_email = os.getenv("GARMIN_EMAIL")
         garmin_password = os.getenv("GARMIN_PASSWORD")
         db_connection_string = os.getenv("DB_CONNECTION_STRING")
+        llm_api_key = os.getenv("LLM_API_KEY")
         
         Config.validate_vars(
             fit_dir_path=fit_path, 
             garmin_email=garmin_email, 
             garmin_password=garmin_password, 
-            db_connection_string=db_connection_string)
+            db_connection_string=db_connection_string,
+            llm_api_key=llm_api_key)
 
         return cls(
             fit_dir_path=Path(fit_path),
             garmin_email=garmin_email,
             garmin_password=garmin_password,
-            db_connection_string=db_connection_string
+            db_connection_string=db_connection_string,
+            llm_api_key=llm_api_key
         )
 

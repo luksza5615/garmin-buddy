@@ -25,6 +25,16 @@ class Database:
             SessionLocal=SessionLocal
         )
 
+    @contextmanager
+    def get_db_connection(self) -> Iterator[object]:
+        session: Session | None = None
+        try:
+            session, conn = self._create_session_connection()
+            yield conn
+        finally:
+            if session is not None:
+                session.close()
+    
     @retry(
         stop=stop_after_attempt(5),
         wait=wait_fixed(2),
@@ -32,23 +42,8 @@ class Database:
         before=lambda rs: logger.info(f"DB connection attempt #{rs.attempt_number}"),
         after=lambda rs: logger.info(f"Attempt #{rs.attempt_number} finished")
     )
-    def create_session_connection(self):
+    def _create_session_connection(self):
         session = self.SessionLocal()
         conn = session.connection()
-        return session, conn
-    
-    @contextmanager
-    def get_db_connection(self) -> Iterator[object]:
-        session: Session | None = None
-        try:
-            session, conn = self.create_session_connection()
-            yield conn
-        finally:
-            if session is not None:
-                session.close()
-
-    def get_engine(self, config: Config) -> Engine:
-        return self.engine
-
-
+        return session, conn   
     

@@ -58,7 +58,6 @@ class ActivityMapper:
         return subsport
 
     def _calculate_running_efficiency_index(self, sport: str, pace: str, avg_hr: int) -> float:
-        # Expect "m:ss"; if missing/invalid, return None
         if sport == 'running':
             if not pace or ":" not in pace or avg_hr in (None, 0):
                 return None
