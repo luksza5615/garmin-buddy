@@ -18,7 +18,6 @@ logs/
 # temp
 fit-files/
 zignored/
-resources/
 tree-maker/
 
 docs/roles_skills.md
