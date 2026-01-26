@@ -1,5 +1,4 @@
 import pytest
-from datetime import timedelta
 
 from app.utils.converter import convert_m_to_km
 

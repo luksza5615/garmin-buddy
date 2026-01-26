@@ -40,7 +40,7 @@ class GarminClient:
                     window_start.isoformat(), window_end.isoformat())
                 if activities:
                     all_activities.extend(activities)
-            except Exception as e:
+            except Exception:
                 logger.exception("Failed to fetch activities for window %s - %s", window_start, window_end)
             window_start = window_end + timedelta(days=1)
 
