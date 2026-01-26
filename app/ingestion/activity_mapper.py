@@ -15,19 +15,19 @@ class ActivityMapper:
     def from_parsed_fit(self, activity_id: int, parsed_activity: dict[str, Any]) -> Activity:
         activity_id = activity_id
         activity_start_time = parsed_activity.get("local_timestamp") or parsed_activity.get("start_time") or parsed_activity.get("timestamp")
-        activity_date = activity_start_time.date()
-        sport = parsed_activity.get("sport")
+        activity_date = activity_start_time.date() if activity_start_time else None
+        sport = parsed_activity.get("sport", None)
         subsport = self._modify_subsport(sport, parsed_activity.get("sub_sport"))
         distance_in_km = convert_m_to_km(parsed_activity.get("total_distance"))
         elapsed_duration = convert_seconds_to_time(parsed_activity.get("total_elapsed_time"))
         grade_adjusted_avg_pace_min_per_km = convert_speed_to_pace(parsed_activity.get("enhanced_avg_speed"))
-        avg_heart_rate = parsed_activity.get("avg_heart_rate")
-        calories_burnt = parsed_activity.get("total_calories")
-        aerobic_training_effect_0_to_5 = parsed_activity.get("total_training_effect")
-        anaerobic_training_effect_0_to_5 = parsed_activity.get("total_anaerobic_training_effect")
-        total_ascent_in_meters = parsed_activity.get("total_ascent")
-        total_descent_in_meters = parsed_activity.get("total_descent")
-        start_of_week = calculate_start_of_week(activity_start_time)
+        avg_heart_rate = parsed_activity.get("avg_heart_rate", None)
+        calories_burnt = parsed_activity.get("total_calories", None)
+        aerobic_training_effect_0_to_5 = parsed_activity.get("total_training_effect", None)
+        anaerobic_training_effect_0_to_5 = parsed_activity.get("total_anaerobic_training_effect", None)
+        total_ascent_in_m = parsed_activity.get("total_ascent", None)
+        total_descent_in_m = parsed_activity.get("total_descent", None)
+        start_of_week = calculate_start_of_week(activity_start_time) if activity_start_time else None
         running_efficiency_index = self._calculate_running_efficiency_index(sport, grade_adjusted_avg_pace_min_per_km, avg_heart_rate)
         
         return Activity(
@@ -43,13 +43,13 @@ class ActivityMapper:
             calories_burnt=calories_burnt,
             aerobic_training_effect_0_to_5=aerobic_training_effect_0_to_5,
             anaerobic_training_effect_0_to_5=anaerobic_training_effect_0_to_5,
-            total_ascent_in_meters=total_ascent_in_meters,
-            total_descent_in_meters=total_descent_in_meters,
+            total_ascent_in_m=total_ascent_in_m,
+            total_descent_in_m=total_descent_in_m,
             start_of_week=start_of_week,
             running_efficiency_index=running_efficiency_index
         )
 
-    def _modify_subsport(self, sport: str, subsport: str) -> str:
+    def _modify_subsport(self, sport: str, subsport: str) -> str:        
         if sport == "hiking":
             subsport = "hiking"
         if sport == "running" and subsport == "generic":

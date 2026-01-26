@@ -43,12 +43,12 @@ class ActivityRepository:
                 query = text("""INSERT INTO activity (
                             activity_id, activity_date, activity_start_time, sport, subsport, distance_in_km, elapsed_duration, 
                             grade_adjusted_avg_pace_min_per_km, avg_heart_rate, calories_burnt, aerobic_training_effect_0_to_5, 
-                            anaerobic_training_effect_0_to_5, total_ascent_in_meters, total_descent_in_meters, start_of_week, running_efficiency_index)
+                            anaerobic_training_effect_0_to_5, total_ascent_in_m, total_descent_in_m, start_of_week, running_efficiency_index)
                             VALUES (
                             :activity_id, :activity_date, :activity_start_time, :sport, :subsport, :distance_in_km, :elapsed_duration,
                             :grade_adjusted_avg_pace_min_per_km, :avg_heart_rate, :calories_burnt,
                             :aerobic_training_effect_0_to_5, :anaerobic_training_effect_0_to_5,
-                            :total_ascent_in_meters, :total_descent_in_meters, :start_of_week, :running_efficiency_index)
+                            :total_ascent_in_m, :total_descent_in_m, :start_of_week, :running_efficiency_index)
                         """)
 
                 params = asdict(activity)

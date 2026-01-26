@@ -17,8 +17,8 @@ def create_activity_table():
                 calories_burnt INT,
                 aerobic_training_effect_0_to_5 DECIMAL(2,1),
                 anaerobic_training_effect_0_to_5 DECIMAL(2,1),
-                total_ascent_in_meters INT,
-                total_descent_in_meters INT,
+                total_ascent_in_m INT,
+                total_descent_in_m INT,
                 start_of_week DATE,
                 running_efficiency_index DECIMAL(5,2)
             )
