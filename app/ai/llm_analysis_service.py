@@ -40,7 +40,7 @@ class LLMService:
                 - Pace: {activity['grade_adjusted_avg_pace_min_per_km']} min/km
                 - Avg Heart Rate: {activity['avg_heart_rate']} bpm
                 - Calories: {activity['calories_burnt']}
-                - Elevation: +{activity['total_ascent_in_meters']}m / -{activity['total_descent_in_meters']}m
+                - Elevation: {activity['total_ascent_in_m']}m
                 - Training Effect: {activity['aerobic_training_effect_0_to_5']}
                 - Running efficiency Index: {activity['running_efficiency_index'] if pd.notna(activity['running_efficiency_index']) else 'N/A'}
                 """

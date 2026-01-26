@@ -25,8 +25,8 @@ class AnalysisService:
         # TODO
         # if "elapsed_duration" in activities.columns:
         #     kpis["duration_h"] = float(activities["elapsed_duration"].dt.total_seconds().sum() / 3600)
-        if "total_ascent_in_meters" in activities.columns:
-            kpis["ascent_m"] = float(activities["total_ascent_in_meters"].sum())
+        if "total_ascent_in_m" in activities.columns:
+            kpis["ascent_m"] = float(activities["total_ascent_in_m"].sum())
         if "avg_heart_rate" in activities.columns:
             kpis["avg_hr"] = float(activities["avg_heart_rate"].mean())
         if "calories_burnt" in activities.columns:
@@ -55,7 +55,7 @@ class AnalysisService:
             "number_of_activities": len(running_df),
             "avg_running_hr": running_df["avg_heart_rate"].mean(),
             "total_distance_in_km": running_df["distance_in_km"].sum(),
-            "total_ascent_in_m": running_df["total_ascent_in_meters"].sum(),
+            "total_ascent_in_m": running_df["total_ascent_in_m"].sum(),
             "calories_burnt": running_df["calories_burnt"].sum(),
             "avg_running_efficiency_index": running_df["running_efficiency_index"].mean(),
             "aerobic_training_effect_0_to_5": running_df["aerobic_training_effect_0_to_5"].mean(),
@@ -73,7 +73,7 @@ class AnalysisService:
             .agg(
                 distance_km=("distance_in_km", "sum"),
                 avg_hr=("avg_heart_rate", "mean"),
-                ascent_m=("total_ascent_in_meters", "sum"),
+                ascent_m=("total_ascent_in_m", "sum"),
                 calories=("calories_burnt", "sum"),
                 te_aer=("aerobic_training_effect_0_to_5", "mean"),
                 te_ana=("anaerobic_training_effect_0_to_5", "mean"),
@@ -84,6 +84,9 @@ class AnalysisService:
 
         return weekly_stats
 
+    #TODO
+    # def _calculate_total_activity_time(self, df: pd.DataFrame) 
+    #TODO check if used
     def _max_range_exceeded(self, start_date: date, end_date: date) -> Tuple[bool, int]:
         delta = (end_date - start_date).days
         is_exceeded = True if delta >= _MAX_ALLOWED_RANGE else False

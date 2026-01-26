@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Iterator
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
-from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type, before, after
+from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type
 from sqlalchemy.exc import OperationalError
 from contextlib import contextmanager
 from app.settings.config import Config

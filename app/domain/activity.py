@@ -15,7 +15,7 @@ class Activity:
     calories_burnt: int
     aerobic_training_effect_0_to_5: float
     anaerobic_training_effect_0_to_5: float
-    total_ascent_in_meters: int
-    total_descent_in_meters: int
+    total_ascent_in_m: int
+    total_descent_in_m: int
     start_of_week: date
     running_efficiency_index: float

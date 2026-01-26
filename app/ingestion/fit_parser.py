@@ -14,7 +14,7 @@ class FitParser:
                 logger.exception("Invalid .fit file header: %s", file_path)
         
         logging.info(f"Parsing {file_path}...")
-        fitfile = fitparse.FitFile(file_path)
+        fitfile = fitparse.FitFile(str(file_path))
 
         message_types = ["activity", "session"]  # most important: session
 

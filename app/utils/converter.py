@@ -4,14 +4,11 @@ def calculate_start_of_week(timestamp):
     week_start = timestamp - pd.to_timedelta(timestamp.weekday(), unit="D")
     return week_start
 
-def datetime_to_id(dt):
-    return int(dt.strftime("%Y%m%d%H%M%S"))
 
 def convert_speed_to_pace(speed_in_m_s):
-    converted_speed = "-"
 
-    if speed_in_m_s is None:
-        return converted_speed
+    if speed_in_m_s is None or speed_in_m_s == 0:
+        return None
 
     try:
         if speed_in_m_s > 0:
@@ -30,15 +27,14 @@ def convert_speed_to_pace(speed_in_m_s):
 
             converted_speed = f"{minutes}:{seconds}"
     except Exception:
-        # keep default "-"
-        pass
+        return None
 
     return converted_speed
 
 
 def convert_seconds_to_time(seconds):
     if seconds is None:
-        return "00:00:00"
+        return None
 
     try:
         hours = int(seconds // 3600)
@@ -55,16 +51,15 @@ def convert_seconds_to_time(seconds):
 
         return f"{hours}:{minutes}:{seconds}"
     except Exception:
-        return "00:00:00"
+        return None
 
-
-def convert_m_to_km(value_in_m):
+def convert_m_to_km(value_in_m: float | None) -> float:
     if value_in_m is None:
-        return f"{0.0:.2f}"
+        return None
 
     try:
         value_in_km = value_in_m / 1000
-        return f"{value_in_km:.2f}"
+        return round(value_in_km, 2)
     except Exception:
-        return f"{0.0:.2f}"
+        return None
 
