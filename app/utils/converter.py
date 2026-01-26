@@ -1,4 +1,3 @@
-from numpy.ma.core import round_
 import pandas as pd
 
 def calculate_start_of_week(timestamp):
@@ -7,9 +6,8 @@ def calculate_start_of_week(timestamp):
 
 
 def convert_speed_to_pace(speed_in_m_s):
-    # converted_speed = "-"
 
-    if speed_in_m_s is None:
+    if speed_in_m_s is None or speed_in_m_s == 0:
         return None
 
     try:
@@ -29,7 +27,6 @@ def convert_speed_to_pace(speed_in_m_s):
 
             converted_speed = f"{minutes}:{seconds}"
     except Exception:
-        # keep default "-"
         return None
 
     return converted_speed
