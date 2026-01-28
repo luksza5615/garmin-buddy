@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import date, time, timedelta
 
+
 @dataclass
 class Activity:
     activity_id: int

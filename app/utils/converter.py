@@ -1,12 +1,12 @@
 import pandas as pd
 
+
 def calculate_start_of_week(timestamp):
     week_start = timestamp - pd.to_timedelta(timestamp.weekday(), unit="D")
     return week_start
 
 
 def convert_speed_to_pace(speed_in_m_s):
-
     if speed_in_m_s is None or speed_in_m_s == 0:
         return None
 
@@ -53,6 +53,7 @@ def convert_seconds_to_time(seconds):
     except Exception:
         return None
 
+
 def convert_m_to_km(value_in_m: float | None) -> float:
     if value_in_m is None:
         return None
@@ -62,4 +63,3 @@ def convert_m_to_km(value_in_m: float | None) -> float:
         return round(value_in_km, 2)
     except Exception:
         return None
-

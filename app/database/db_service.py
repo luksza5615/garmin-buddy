@@ -10,11 +10,14 @@ from app.database.db_connector import Database
 
 logger = logging.getLogger(__name__)
 
+
 class ActivityRepository:
     def __init__(self, database: Database) -> None:
         self.database = database
 
-    def get_activities(self, start_date: date | None = None, end_date: date | None = None) -> pd.DataFrame:   
+    def get_activities(
+        self, start_date: date | None = None, end_date: date | None = None
+    ) -> pd.DataFrame:
         if start_date is not None and end_date is not None and start_date > end_date:
             raise ValueError(
                 f"Start date cannot be later than end date for activities range. Start date set: {start_date}, end date: {end_date}"
@@ -29,14 +32,16 @@ class ActivityRepository:
         if end_date is not None:
             query += " AND activity_date <= :end_date"
             query_params["end_date"] = end_date
-      
+
         with self.database.get_db_connection() as conn:
-            activities = pd.read_sql_query(text(query), conn, params=query_params if query_params else None)
-        
+            activities = pd.read_sql_query(
+                text(query), conn, params=query_params if query_params else None
+            )
+
         logger.info("Fetched %d activities", len(activities))
 
         return activities
-  
+
     def persist_activity(self, activity):
         if self._check_if_activity_exists_in_db(activity.activity_id) is False:
             try:
@@ -56,26 +61,34 @@ class ActivityRepository:
                 with self.database.engine.begin() as conn:
                     conn.execute(query, params)
 
-                logger.info("Activity %s_%s data saved in database sucessfully",
-                    activity.sport, activity.activity_date)
+                logger.info(
+                    "Activity %s_%s data saved in database sucessfully",
+                    activity.sport,
+                    activity.activity_date,
+                )
             except pyodbc.ProgrammingError:
-                logger.exception("Failed to save activity %s_%s due to error: %s", 
-                    activity.sport, activity.activity_date)
+                logger.exception(
+                    "Failed to save activity %s_%s due to error: %s",
+                    activity.sport,
+                    activity.activity_date,
+                )
         else:
-            logger.info("Activity %s already exists in the database",
-                (activity.activity_start_time))
+            logger.info(
+                "Activity %s already exists in the database",
+                (activity.activity_start_time),
+            )
 
     def get_activity_ids_set(self):
         rows = self._get_activity_ids()
 
-        return set([row.activity_id for row in rows])   
+        return set([row.activity_id for row in rows])
 
     def _check_if_activity_exists_in_db(self, activity_id):
         activities_rows_list = self._get_activity_ids()
         activities_ids_list = [row.activity_id for row in activities_rows_list]
 
         return activity_id in activities_ids_list
-    
+
     def _get_activity_ids(self):
         query = "SELECT activity_id FROM dbo.activity"
 

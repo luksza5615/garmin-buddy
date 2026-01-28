@@ -10,20 +10,18 @@ from app.settings.config import Config
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class Database:
     engine: Engine
     SessionLocal: sessionmaker
-    
+
     @classmethod
     def create_db(cls, config: Config) -> "Database":
         engine = create_engine(config.db_connection_string, pool_pre_ping=True)
         SessionLocal = sessionmaker(bind=engine)
 
-        return cls(
-            engine=engine,
-            SessionLocal=SessionLocal
-        )
+        return cls(engine=engine, SessionLocal=SessionLocal)
 
     @contextmanager
     def get_db_connection(self) -> Iterator[object]:
@@ -34,16 +32,15 @@ class Database:
         finally:
             if session is not None:
                 session.close()
-    
+
     @retry(
         stop=stop_after_attempt(5),
         wait=wait_fixed(2),
         retry=retry_if_exception_type(OperationalError),
         before=lambda rs: logger.info(f"DB connection attempt #{rs.attempt_number}"),
-        after=lambda rs: logger.info(f"Attempt #{rs.attempt_number} finished")
+        after=lambda rs: logger.info(f"Attempt #{rs.attempt_number} finished"),
     )
     def _create_session_connection(self):
         session = self.SessionLocal()
         conn = session.connection()
-        return session, conn   
-    
+        return session, conn

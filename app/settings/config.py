@@ -5,12 +5,12 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+
 class ConfigError(Exception):
     def __init__(self, missing_vars: list[str]):
         self.missing_vars = missing_vars
-        super().__init__(
-            f"Missing required variables: {', '.join(missing_vars)}"
-        )
+        super().__init__(f"Missing required variables: {', '.join(missing_vars)}")
+
 
 @dataclass(frozen=True)
 class Config:
@@ -21,8 +21,14 @@ class Config:
     llm_api_key: str
 
     @staticmethod
-    def validate_vars(*, fit_dir_path, garmin_email, garmin_password, db_connection_string, llm_api_key) -> None:
-
+    def validate_vars(
+        *,
+        fit_dir_path,
+        garmin_email,
+        garmin_password,
+        db_connection_string,
+        llm_api_key,
+    ) -> None:
         missing_vars: list[str] = []
         if not fit_dir_path:
             missing_vars.append("FIT_DIR_PATH")
@@ -34,7 +40,6 @@ class Config:
             missing_vars.append("DB_CONNECTION_STRING")
         if not llm_api_key:
             missing_vars.append("LLM_API_KEY")
-
 
         if missing_vars:
             raise ConfigError(missing_vars)
@@ -48,19 +53,19 @@ class Config:
         garmin_password = os.getenv("GARMIN_PASSWORD")
         db_connection_string = os.getenv("DB_CONNECTION_STRING")
         llm_api_key = os.getenv("LLM_API_KEY")
-        
+
         Config.validate_vars(
-            fit_dir_path=fit_path, 
-            garmin_email=garmin_email, 
-            garmin_password=garmin_password, 
+            fit_dir_path=fit_path,
+            garmin_email=garmin_email,
+            garmin_password=garmin_password,
             db_connection_string=db_connection_string,
-            llm_api_key=llm_api_key)
+            llm_api_key=llm_api_key,
+        )
 
         return cls(
             fit_dir_path=Path(fit_path),
             garmin_email=garmin_email,
             garmin_password=garmin_password,
             db_connection_string=db_connection_string,
-            llm_api_key=llm_api_key
+            llm_api_key=llm_api_key,
         )
-

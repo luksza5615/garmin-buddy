@@ -3,6 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import altair as alt
 
+
 def weekly_trend_chart(
     weekly_df: pd.DataFrame,
     col: str,
@@ -29,41 +30,29 @@ def weekly_trend_chart(
     )
 
     if chart_type == "bar":
-        bars = (
-            base.mark_bar(size=bar_size)
-            .encode(
-                y=alt.Y(f"{col}:Q", title=None),
-                color=alt.value(bar_color),
-            )
+        bars = base.mark_bar(size=bar_size).encode(
+            y=alt.Y(f"{col}:Q", title=None),
+            color=alt.value(bar_color),
         )
 
-        rolling = (
-            base.mark_line(point=True)
-            .encode(
-                y="rolling_4w:Q",
-                color=alt.value(line_color),
-            )
+        rolling = base.mark_line(point=True).encode(
+            y="rolling_4w:Q",
+            color=alt.value(line_color),
         )
 
         chart = bars + rolling
 
     else:
-        line = (
-            base.mark_line(point=True)
-            .encode(
-                y=alt.Y(f"{col}:Q", title=None),
-                color=alt.value(line_color),
-            )
+        line = base.mark_line(point=True).encode(
+            y=alt.Y(f"{col}:Q", title=None),
+            color=alt.value(line_color),
         )
 
-        rolling = (
-            base.mark_line()
-            .encode(
-                y="rolling_4w:Q",
-                color=alt.value(bar_color),
-            )
+        rolling = base.mark_line().encode(
+            y="rolling_4w:Q",
+            color=alt.value(bar_color),
         )
 
         chart = line + rolling
 
-    return chart.properties(height=500).interactive() 
+    return chart.properties(height=500).interactive()

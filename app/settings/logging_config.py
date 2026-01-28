@@ -7,6 +7,7 @@ _DEFAULT_LOGGING_LEVEL = "INFO"
 _VALID_LOGGING_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
 _state = {"configured": False}
 
+
 def setup_logging() -> None:
     if _state["configured"]:
         return
@@ -39,22 +40,24 @@ def setup_logging() -> None:
 
     if default_level_used:
         logging.getLogger(__name__).warning(
-            "Missing LOG_LEVEL in environment settings. Value set to default: %s", _DEFAULT_LOGGING_LEVEL
-        ) 
-        
+            "Missing LOG_LEVEL in environment settings. Value set to default: %s",
+            _DEFAULT_LOGGING_LEVEL,
+        )
+
     _state["configured"] = True
+
 
 def _get_logging_level() -> tuple[str, bool]:
     logging_level = os.getenv("LOG_LEVEL")
     default_used = False
     if not logging_level:
         default_used = True
-        
+
         return _DEFAULT_LOGGING_LEVEL, default_used
-        
+
     if logging_level not in _VALID_LOGGING_LEVELS:
         raise ValueError(
             f"Incorrect LOG_LEVEL set in environment. Allowed: {_VALID_LOGGING_LEVELS}, but set: {logging_level}"
         )
-    
+
     return logging_level, default_used

@@ -8,7 +8,6 @@ SPORT_LABELS = {
     "62": "Multisport",
     "fitness_equipment": "Other",
     "54": "Other",
-
 }
 
 SUBSPORT_LABELS = {
@@ -24,6 +23,5 @@ SUBSPORT_LABELS = {
     "generic": "Other",
     "62": "Multisport",
     "97": "Other",
-    "60": "Other"
+    "60": "Other",
 }
-
