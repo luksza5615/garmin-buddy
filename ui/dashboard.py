@@ -1,7 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
-import math
+from datetime import date, timedelta
 
 from dotenv import load_dotenv
 import pandas as pd
