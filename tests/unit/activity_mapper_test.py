@@ -1,6 +1,6 @@
 import pytest
 
-from app.ingestion.activity_mapper import ActivityMapper
+from garmin_buddy.ingestion.activity_mapper import ActivityMapper
 
 
 @pytest.fixture(scope="module")
