@@ -1,8 +1,8 @@
 import logging
 from typing import Any
 
-from app.domain.activity import Activity
-from app.utils.converter import (
+from garmin_buddy.domain.activity import Activity
+from garmin_buddy.utils.converter import (
     calculate_start_of_week,
     convert_m_to_km,
     convert_seconds_to_time,

@@ -2,13 +2,13 @@ from datetime import date
 import logging
 import os
 
-from app.database.db_service import ActivityRepository
-from app.ingestion.activity_mapper import ActivityMapper
-from app.settings.config import Config
-from app.database.db_connector import Database
-from app.ingestion.fit_filestore import FitFileStore
-from app.ingestion.fit_parser import FitParser
-from app.ingestion.garmin_client import GarminClient
+from garmin_buddy.database.db_service import ActivityRepository
+from garmin_buddy.ingestion.activity_mapper import ActivityMapper
+from garmin_buddy.settings.config import Config
+from garmin_buddy.database.db_connector import Database
+from garmin_buddy.ingestion.fit_filestore import FitFileStore
+from garmin_buddy.ingestion.fit_parser import FitParser
+from garmin_buddy.ingestion.garmin_client import GarminClient
 
 logger = logging.getLogger(__name__)
 

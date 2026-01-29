@@ -1,6 +1,6 @@
 import pytest
 
-from app.utils.converter import convert_m_to_km
+from garmin_buddy.utils.converter import convert_m_to_km
 
 
 @pytest.mark.parametrize(

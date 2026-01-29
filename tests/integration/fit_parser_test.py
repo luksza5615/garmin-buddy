@@ -1,7 +1,7 @@
 from pathlib import Path
 import pytest
 
-from app.ingestion.fit_parser import FitParser
+from garmin_buddy.ingestion.fit_parser import FitParser
 
 
 @pytest.fixture(scope="module")

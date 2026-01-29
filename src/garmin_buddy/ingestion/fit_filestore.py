@@ -2,8 +2,8 @@ import logging
 import os
 import zipfile
 
-from app.settings.config import Config
-from app.ingestion.garmin_client import GarminClient
+from garmin_buddy.settings.config import Config
+from garmin_buddy.ingestion.garmin_client import GarminClient
 
 logger = logging.getLogger(__name__)
 

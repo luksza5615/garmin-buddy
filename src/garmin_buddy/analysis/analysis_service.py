@@ -3,7 +3,7 @@ from typing import Any, Tuple
 
 import pandas as pd
 
-from app.database.db_service import ActivityRepository
+from garmin_buddy.database.db_service import ActivityRepository
 
 _DEFAULT_END_DATE = date.today()
 _DEFAULT_START_DATE = date.today() - timedelta(7)

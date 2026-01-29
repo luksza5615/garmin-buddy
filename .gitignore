@@ -24,4 +24,6 @@ docs/roles_skills.md
 docs/definition_of_done.md
 notebooks/test.ipynb
 
+*.egg-info/
+
 AGENTS.md

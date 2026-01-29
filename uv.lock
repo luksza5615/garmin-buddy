@@ -339,7 +339,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/61/ed/5637fe96c56d55dfa
 [[package]]
 name = "garmin-buddy"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "altair" },
     { name = "dotenv" },

@@ -6,7 +6,7 @@ import pandas as pd
 import pyodbc
 from sqlalchemy import text
 
-from app.database.db_connector import Database
+from garmin_buddy.database.db_connector import Database
 
 logger = logging.getLogger(__name__)
 

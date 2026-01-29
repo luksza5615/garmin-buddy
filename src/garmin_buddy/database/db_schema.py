@@ -1,4 +1,4 @@
-from app.database.db_connector import SessionLocal
+from garmin_buddy.database.db_connector import SessionLocal
 from sqlalchemy import text
 
 
