@@ -4,26 +4,26 @@ __pycache__/
 # Config
 .azure/
 .vscode/
+.cursor/
 
 # Environment
 /.venv
 .env
 
-# DB
-garmin_data.db
-
 #logs
 logs/
 
 # temp
-fit-files/
 zignored/
 tree-maker/
 
-docs/roles_skills.md
-docs/definition_of_done.md
-notebooks/test.ipynb
+docs/
+# docs/roles_skills.md
+# docs/definition_of_done.md
 
 *.egg-info/
+.pytest_cache/
+.ruff_cache/
 
+.cursorignore
 AGENTS.md

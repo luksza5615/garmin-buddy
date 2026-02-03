@@ -104,6 +104,3 @@ class AnalysisService:
         is_exceeded = True if delta >= _MAX_ALLOWED_RANGE else False
 
         return is_exceeded, delta
-
-    # TODO
-    print("test")
