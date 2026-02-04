@@ -1,11 +1,13 @@
 import logging
 import os
 import zipfile
+from typing import Any
 
 from garmin_buddy.settings.config import Config
 from garmin_buddy.ingestion.garmin_client import GarminClient
 
 logger = logging.getLogger(__name__)
+MAX_ZIP_BYTES = 5 * 1024 * 1024
 
 
 class FitFileStore:
@@ -30,8 +32,13 @@ class FitFileStore:
         return id_extension[:-4]
 
     def create_fit_file_from_zip(
-        self, fit_zip_file, garmin_activity, fit_filepath, garmin_client: GarminClient
+        self,
+        fit_zip_file: bytes,
+        garmin_activity: dict[str, Any],
+        fit_filepath: str,
+        garmin_client: GarminClient,
     ) -> None:
+        self._validate_zip_size(fit_zip_file)
         garmin_activity_id, garmin_activity_type, garmin_activity_date = (
             garmin_client.get_activity_signature(garmin_activity)
         )
@@ -61,3 +68,13 @@ class FitFileStore:
                 pass
         except Exception:
             logger.exception("Failed to extract or remove ZIP %s", fit_path_zip)
+
+    def _validate_zip_size(self, fit_zip_file: bytes) -> None:
+        zip_bytes = len(fit_zip_file)
+        if zip_bytes > MAX_ZIP_BYTES:
+            error_message = (
+                f"ZIP file size {zip_bytes} bytes exceeds the maximum allowed size "
+                f"of {MAX_ZIP_BYTES} bytes."
+            )
+            logger.error(error_message)
+            raise ValueError(error_message)
